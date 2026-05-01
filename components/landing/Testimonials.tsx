@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Quote, X, Send } from 'lucide-react';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
 
 interface Review {
   id: string;
@@ -18,28 +20,57 @@ export default function Testimonials() {
   const [formData, setFormData] = useState({ name: '', review: '', rating: 5 });
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  // Load reviews from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return;
+
+    const loadReviews = async () => {
+      if (isFirebaseConfigured() && db) {
+        try {
+          const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
+          const snapshot = await getDocs(reviewsQuery);
+
+          if (!snapshot.empty) {
+            const loadedReviews = snapshot.docs.map(doc => {
+              const data = doc.data() as any;
+              return {
+                id: data.id || doc.id,
+                name: data.name,
+                review: data.review,
+                rating: data.rating,
+                avatar: data.avatar || '👧',
+                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+              } as Review;
+            });
+
+            setReviews(loadedReviews);
+            localStorage.setItem('okurmen_reviews', JSON.stringify(loadedReviews));
+            return;
+          }
+        } catch (error) {
+          console.error('Failed to load reviews from Firestore:', error);
+        }
+      }
+
       const savedReviews = localStorage.getItem('okurmen_reviews');
       if (savedReviews) {
         const parsed = JSON.parse(savedReviews);
         setReviews(parsed.map((r: any) => ({
           ...r,
-          createdAt: new Date(r.createdAt)
+          createdAt: new Date(r.createdAt),
         })));
       }
-    }
+    };
+
+    loadReviews();
   }, []);
 
-  // Save reviews to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined' && reviews.length > 0) {
       localStorage.setItem('okurmen_reviews', JSON.stringify(reviews));
     }
   }, [reviews]);
 
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const newReview: Review = {
@@ -47,11 +78,23 @@ export default function Testimonials() {
       name: formData.name,
       review: formData.review,
       rating: formData.rating,
-      avatar: '�',
+      avatar: '👧',
       createdAt: new Date(),
     };
 
     setReviews(prev => [newReview, ...prev]);
+
+    if (isFirebaseConfigured() && db) {
+      try {
+        await addDoc(collection(db, 'reviews'), {
+          ...newReview,
+          createdAt: newReview.createdAt,
+        });
+      } catch (error) {
+        console.error('Failed to save review to Firestore:', error);
+      }
+    }
+
     setIsModalOpen(false);
     setFormData({ name: '', review: '', rating: 5 });
     alert('Рахмат! Сиздин пикириңиз кабыл алынды.');

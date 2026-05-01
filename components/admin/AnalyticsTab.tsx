@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { Users, FileText, Star, BookOpen, TrendingUp, Calendar } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import { useEffect, useState } from 'react';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
 
 // Animated Counter for Analytics
 function AnimatedCounter({ end, duration = 1.5 }: { end: number; duration?: number }) {
@@ -36,14 +38,39 @@ export default function AnalyticsTab() {
   const { students, leads, teachers, courses } = useData();
   const [reviews, setReviews] = useState<any[]>([]);
 
-  // Load reviews from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') return;
+
+    const loadReviews = async () => {
+      if (isFirebaseConfigured() && db) {
+        try {
+          const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
+          const snapshot = await getDocs(reviewsQuery);
+
+          if (!snapshot.empty) {
+            const loadedReviews = snapshot.docs.map(doc => {
+              const data = doc.data() as any;
+              return {
+                ...data,
+                id: data.id || doc.id,
+                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+              };
+            });
+            setReviews(loadedReviews);
+            return;
+          }
+        } catch (error) {
+          console.error('Failed to load reviews from Firestore:', error);
+        }
+      }
+
       const savedReviews = localStorage.getItem('okurmen_reviews');
       if (savedReviews) {
         setReviews(JSON.parse(savedReviews));
       }
-    }
+    };
+
+    loadReviews();
   }, []);
 
   const stats = [

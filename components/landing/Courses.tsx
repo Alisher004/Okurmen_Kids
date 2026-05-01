@@ -1,13 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Code, Palette, Brain, Gamepad2 } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import Image from 'next/image';
-
-const iconMap: Record<string, any> = {
-  Code, Palette, Brain, Gamepad2
-};
 
 // Course images mapping
 const courseImages: Record<string, string> = {
@@ -47,7 +42,6 @@ export default function Courses() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {courses.map((course, index) => {
-            const Icon = iconMap[course.icon] || Code;
             const imageUrl = courseImages[course.title] || courseImages['Frontend Development'];
             
             return (
@@ -69,13 +63,6 @@ export default function Courses() {
                     className="object-cover transition-transform duration-500 hover:scale-110"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-t ${course.color} opacity-60`} />
-                  
-                  {/* Icon Overlay */}
-                  <div className="absolute top-4 right-4">
-                    <div className={`w-12 h-12 rounded-xl bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg`}>
-                      <Icon className={`w-6 h-6 bg-gradient-to-br ${course.color} bg-clip-text text-transparent`} style={{ WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} />
-                    </div>
-                  </div>
                 </div>
                 
                 <div className="p-6">
@@ -96,7 +83,7 @@ export default function Courses() {
                   
                   <button
                     onClick={() => handleWhatsAppClick(course.title)}
-                    className={`w-full bg-gradient-to-r ${course.color} text-white py-3 rounded-lg font-semibold hover:shadow-xl transition-all duration-300 hover:scale-105`}
+                    className={`w-full bg-gradient-to-r ${course.color || 'from-blue-500 to-blue-600'} text-white py-3 rounded-lg font-semibold border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]`}
                   >
                     📱 WhatsApp аркылуу жазылуу
                   </button>

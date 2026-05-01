@@ -10,13 +10,8 @@ import {
   orderBy,
   Timestamp 
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, isFirebaseConfigured } from './firebase';
 import type { Course, Teacher, Student, Lead } from '@/context/DataContext';
-
-// Check if Firebase is configured
-const isFirebaseConfigured = () => {
-  return process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== undefined;
-};
 
 // Courses Hook
 export function useCourses() {
