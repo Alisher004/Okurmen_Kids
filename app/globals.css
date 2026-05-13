@@ -53,3 +53,100 @@ html {
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+.admin-dashboard .admin-content {
+  color: rgb(226 232 240);
+}
+
+.admin-dashboard .admin-content .bg-white {
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(18px);
+}
+
+.admin-dashboard .admin-content .bg-gray-50,
+.admin-dashboard .admin-content .bg-slate-50,
+.admin-dashboard .admin-content .bg-blue-50,
+.admin-dashboard .admin-content .bg-yellow-50,
+.admin-dashboard .admin-content .bg-green-50,
+.admin-dashboard .admin-content .bg-purple-50,
+.admin-dashboard .admin-content .bg-red-50,
+.admin-dashboard .admin-content .bg-orange-50 {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-dashboard .admin-content .border-gray-200,
+.admin-dashboard .admin-content .border-slate-200,
+.admin-dashboard .admin-content .border-yellow-200 {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-dashboard .admin-content .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-dashboard .admin-content .text-gray-900,
+.admin-dashboard .admin-content .text-slate-950,
+.admin-dashboard .admin-content .text-slate-900,
+.admin-dashboard .admin-content .text-gray-800,
+.admin-dashboard .admin-content .text-gray-700 {
+  color: rgb(248 250 252);
+}
+
+.admin-dashboard .admin-content .text-gray-600,
+.admin-dashboard .admin-content .text-slate-700,
+.admin-dashboard .admin-content .text-slate-600,
+.admin-dashboard .admin-content .text-gray-500,
+.admin-dashboard .admin-content .text-slate-500 {
+  color: rgb(148 163 184);
+}
+
+.admin-dashboard .admin-content table thead {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.admin-dashboard .admin-content tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-dashboard .admin-content input,
+.admin-dashboard .admin-content textarea,
+.admin-dashboard .admin-content select {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgb(248 250 252);
+}
+
+.admin-dashboard .admin-content input::placeholder,
+.admin-dashboard .admin-content textarea::placeholder {
+  color: rgb(100 116 139);
+}
+
+.admin-dashboard .admin-content option {
+  color: rgb(15 23 42);
+}
+
+.teacher-flip-card {
+  perspective: 1200px;
+}
+
+.teacher-flip-inner {
+  transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.teacher-flip-card:hover .teacher-flip-inner,
+.teacher-flip-card:focus-within .teacher-flip-inner,
+.teacher-flip-card:focus .teacher-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.teacher-flip-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.teacher-flip-back {
+  transform: rotateY(180deg);
+}

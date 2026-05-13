@@ -94,7 +94,7 @@ export default function Hero() {
               {[
                 { value: 500, label: 'Студенттер', suffix: '+' },
                 { value: 10, label: 'Мугалимдер', suffix: '+' },
-                { value: 5, label: 'Курстар', suffix: '+' },
+                { value: 3, label: 'Курстар', suffix: '+' },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}

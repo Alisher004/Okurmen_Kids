@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 import { Users, FileText, Star, BookOpen, TrendingUp, Calendar } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db, isFirebaseConfigured } from '@/lib/firebase';
 
 // Animated Counter for Analytics
 function AnimatedCounter({ end, duration = 1.5 }: { end: number; duration?: number }) {
@@ -35,47 +33,11 @@ function AnimatedCounter({ end, duration = 1.5 }: { end: number; duration?: numb
 }
 
 export default function AnalyticsTab() {
-  const { students, leads, teachers, courses } = useData();
-  const [reviews, setReviews] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const loadReviews = async () => {
-      if (isFirebaseConfigured() && db) {
-        try {
-          const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
-          const snapshot = await getDocs(reviewsQuery);
-
-          if (!snapshot.empty) {
-            const loadedReviews = snapshot.docs.map(doc => {
-              const data = doc.data() as any;
-              return {
-                ...data,
-                id: data.id || doc.id,
-                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
-              };
-            });
-            setReviews(loadedReviews);
-            return;
-          }
-        } catch (error) {
-          console.error('Failed to load reviews from Firestore:', error);
-        }
-      }
-
-      const savedReviews = localStorage.getItem('okurmen_reviews');
-      if (savedReviews) {
-        setReviews(JSON.parse(savedReviews));
-      }
-    };
-
-    loadReviews();
-  }, []);
+  const { students, leads, teachers, courses, reviews } = useData();
 
   const stats = [
     {
-      label: 'Жалпы Студенттер',
+      label: 'Мыкты студенттер',
       value: students.length,
       icon: Users,
       color: 'from-blue-500 to-blue-600',
@@ -83,7 +45,7 @@ export default function AnalyticsTab() {
       textColor: 'text-blue-600',
     },
     {
-      label: 'Жалпы Арыздар',
+      label: 'Катталуулар',
       value: leads.length,
       icon: FileText,
       color: 'from-purple-500 to-purple-600',
@@ -177,7 +139,7 @@ export default function AnalyticsTab() {
           transition={{ delay: 0.5 }}
           className="bg-white rounded-2xl shadow-lg p-6"
         >
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Арыздардын статусу</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Катталуулардын статусу</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl">
               <div className="flex items-center space-x-3">
@@ -264,33 +226,6 @@ export default function AnalyticsTab() {
         </motion.div>
       </div>
 
-      {/* Quick Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-        className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg p-6"
-      >
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Тез иш-аракеттер</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="p-4 bg-white rounded-xl hover:shadow-lg transition-all duration-300 text-center">
-            <Users className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <span className="text-sm font-semibold text-gray-700">Студенттерди көрүү</span>
-          </button>
-          <button className="p-4 bg-white rounded-xl hover:shadow-lg transition-all duration-300 text-center">
-            <FileText className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-            <span className="text-sm font-semibold text-gray-700">Арыздарды көрүү</span>
-          </button>
-          <button className="p-4 bg-white rounded-xl hover:shadow-lg transition-all duration-300 text-center">
-            <Star className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-            <span className="text-sm font-semibold text-gray-700">Пикирлерди көрүү</span>
-          </button>
-          <button className="p-4 bg-white rounded-xl hover:shadow-lg transition-all duration-300 text-center">
-            <BookOpen className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <span className="text-sm font-semibold text-gray-700">Курстарды көрүү</span>
-          </button>
-        </div>
-      </motion.div>
     </div>
   );
 }

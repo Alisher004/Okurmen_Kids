@@ -18,12 +18,12 @@ export default function CoursesTab() {
     color: 'from-blue-500 to-blue-600',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingCourse) {
-      updateCourse(editingCourse.id, formData);
+      await updateCourse(editingCourse.id, formData);
     } else {
-      addCourse(formData);
+      await addCourse(formData);
     }
     resetForm();
   };
@@ -69,8 +69,8 @@ export default function CoursesTab() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={resetForm}>
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto p-4 sm:flex sm:items-center sm:justify-center" onClick={resetForm}>
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full my-6 mx-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold">{editingCourse ? 'Өзгөртүү' : 'Жаңы курс'}</h3>
               <button onClick={resetForm} className="p-2 hover:bg-gray-100 rounded-lg">

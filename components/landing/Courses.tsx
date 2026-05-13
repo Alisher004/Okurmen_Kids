@@ -18,7 +18,7 @@ export default function Courses() {
   const whatsappNumber = '+996500677798';
   
   const handleWhatsAppClick = (courseName: string) => {
-    const message = `Салам! ${courseName} курсуна жазылгым келет.`;
+    const message = `Салам! ${courseName} курс боюнча толук маалымат бере аласызбы?.`;
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };

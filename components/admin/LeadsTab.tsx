@@ -18,13 +18,13 @@ export default function LeadsTab() {
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
       <div className="p-6 border-b border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-900">Арыздар ({leads.length})</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Катталуулар ({leads.length})</h2>
       </div>
 
       {leads.length === 0 ? (
         <div className="p-12 text-center">
           <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 text-lg">Азырынча арыздар жок</p>
+          <p className="text-gray-500 text-lg">Азырынча катталуулар жок</p>
         </div>
       ) : (
         <div className="overflow-x-auto">

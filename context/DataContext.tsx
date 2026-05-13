@@ -1,6 +1,18 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+  Timestamp,
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export interface Course {
   id: string;
@@ -20,16 +32,17 @@ export interface Teacher {
   education: string;
   bio: string;
   image: string;
-  phone: string;
-  email: string;
+  phone?: string;
+  email?: string;
 }
 
 export interface Student {
   id: string;
   name: string;
   course: string;
-  achievement: string;
-  avatar: string;
+  image: string;
+  achievement?: string;
+  avatar?: string;
 }
 
 export interface Lead {
@@ -42,147 +55,186 @@ export interface Lead {
   createdAt: Date;
 }
 
+export interface Review {
+  id: string;
+  name: string;
+  review: string;
+  rating: number;
+  createdAt: Date;
+}
+
 interface DataContextType {
   courses: Course[];
-  addCourse: (course: Omit<Course, 'id'>) => void;
-  updateCourse: (id: string, course: Omit<Course, 'id'>) => void;
-  deleteCourse: (id: string) => void;
+  addCourse: (course: Omit<Course, 'id'>) => Promise<void>;
+  updateCourse: (id: string, course: Omit<Course, 'id'>) => Promise<void>;
+  deleteCourse: (id: string) => Promise<void>;
   
   teachers: Teacher[];
-  addTeacher: (teacher: Omit<Teacher, 'id'>) => void;
-  updateTeacher: (id: string, teacher: Omit<Teacher, 'id'>) => void;
-  deleteTeacher: (id: string) => void;
+  addTeacher: (teacher: Omit<Teacher, 'id'>) => Promise<void>;
+  updateTeacher: (id: string, teacher: Omit<Teacher, 'id'>) => Promise<void>;
+  deleteTeacher: (id: string) => Promise<void>;
   
   students: Student[];
-  addStudent: (student: Omit<Student, 'id'>) => void;
-  updateStudent: (id: string, student: Omit<Student, 'id'>) => void;
-  deleteStudent: (id: string) => void;
+  addStudent: (student: Omit<Student, 'id'>) => Promise<void>;
+  updateStudent: (id: string, student: Omit<Student, 'id'>) => Promise<void>;
+  deleteStudent: (id: string) => Promise<void>;
   
   leads: Lead[];
-  addLead: (lead: Omit<Lead, 'id' | 'status' | 'createdAt'>) => void;
-  updateLeadStatus: (id: string, status: Lead['status']) => void;
-  deleteLead: (id: string) => void;
+  addLead: (lead: Omit<Lead, 'id' | 'status' | 'createdAt'>) => Promise<void>;
+  updateLeadStatus: (id: string, status: Lead['status']) => Promise<void>;
+  deleteLead: (id: string) => Promise<void>;
+
+  reviews: Review[];
+  addReview: (review: Omit<Review, 'id' | 'createdAt'>) => Promise<string | null>;
+  deleteReview: (id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
-
-const STORAGE_KEYS = {
-  COURSES: 'okurmen_courses',
-  TEACHERS: 'okurmen_teachers',
-  STUDENTS: 'okurmen_students',
-  LEADS: 'okurmen_leads',
-};
-
-const defaultCourses: Course[] = [];
-
-const defaultTeachers: Teacher[] = [];
-
-const defaultStudents: Student[] = [];
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
-  // Load from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const loadedCourses = localStorage.getItem(STORAGE_KEYS.COURSES);
-      const loadedTeachers = localStorage.getItem(STORAGE_KEYS.TEACHERS);
-      const loadedStudents = localStorage.getItem(STORAGE_KEYS.STUDENTS);
-      const loadedLeads = localStorage.getItem(STORAGE_KEYS.LEADS);
-
-      setCourses(loadedCourses ? JSON.parse(loadedCourses) : defaultCourses);
-      setTeachers(loadedTeachers ? JSON.parse(loadedTeachers) : defaultTeachers);
-      setStudents(loadedStudents ? JSON.parse(loadedStudents) : defaultStudents);
-      setLeads(loadedLeads ? JSON.parse(loadedLeads) : []);
-      setIsLoaded(true);
+    if (!db) {
+      return;
     }
+
+    const unsubscribeCourses = onSnapshot(collection(db, 'courses'), (snapshot) => {
+      setCourses(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Course[]);
+    });
+
+    const unsubscribeTeachers = onSnapshot(collection(db, 'teachers'), (snapshot) => {
+      setTeachers(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Teacher[]);
+    });
+
+    const unsubscribeStudents = onSnapshot(collection(db, 'students'), (snapshot) => {
+      setStudents(snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          image: data.image || data.avatar || '',
+        };
+      }) as Student[]);
+    });
+
+    const leadsQuery = query(collection(db, 'leads'), orderBy('createdAt', 'desc'));
+    const unsubscribeLeads = onSnapshot(leadsQuery, (snapshot) => {
+      setLeads(snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.() || new Date(),
+        };
+      }) as Lead[]);
+    });
+
+    const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
+    const unsubscribeReviews = onSnapshot(reviewsQuery, (snapshot) => {
+      setReviews(snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.() || new Date(),
+        };
+      }) as Review[]);
+    });
+
+    return () => {
+      unsubscribeCourses();
+      unsubscribeTeachers();
+      unsubscribeStudents();
+      unsubscribeLeads();
+      unsubscribeReviews();
+    };
   }, []);
 
-  // Save to localStorage
-  useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
-    }
-  }, [courses, isLoaded]);
-
-  useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.TEACHERS, JSON.stringify(teachers));
-    }
-  }, [teachers, isLoaded]);
-
-  useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
-    }
-  }, [students, isLoaded]);
-
-  useEffect(() => {
-    if (isLoaded && typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEYS.LEADS, JSON.stringify(leads));
-    }
-  }, [leads, isLoaded]);
-
   // Course CRUD
-  const addCourse = (course: Omit<Course, 'id'>) => {
-    setCourses(prev => [...prev, { ...course, id: Date.now().toString() }]);
+  const addCourse = async (course: Omit<Course, 'id'>) => {
+    if (!db) return;
+    await addDoc(collection(db, 'courses'), course);
   };
 
-  const updateCourse = (id: string, course: Omit<Course, 'id'>) => {
-    setCourses(prev => prev.map(c => c.id === id ? { ...course, id } : c));
+  const updateCourse = async (id: string, course: Omit<Course, 'id'>) => {
+    if (!db) return;
+    await updateDoc(doc(db, 'courses', id), course);
   };
 
-  const deleteCourse = (id: string) => {
-    setCourses(prev => prev.filter(c => c.id !== id));
+  const deleteCourse = async (id: string) => {
+    if (!db) return;
+    await deleteDoc(doc(db, 'courses', id));
   };
 
   // Teacher CRUD
-  const addTeacher = (teacher: Omit<Teacher, 'id'>) => {
-    setTeachers(prev => [...prev, { ...teacher, id: Date.now().toString() }]);
+  const addTeacher = async (teacher: Omit<Teacher, 'id'>) => {
+    if (!db) return;
+    await addDoc(collection(db, 'teachers'), teacher);
   };
 
-  const updateTeacher = (id: string, teacher: Omit<Teacher, 'id'>) => {
-    setTeachers(prev => prev.map(t => t.id === id ? { ...teacher, id } : t));
+  const updateTeacher = async (id: string, teacher: Omit<Teacher, 'id'>) => {
+    if (!db) return;
+    await updateDoc(doc(db, 'teachers', id), teacher);
   };
 
-  const deleteTeacher = (id: string) => {
-    setTeachers(prev => prev.filter(t => t.id !== id));
+  const deleteTeacher = async (id: string) => {
+    if (!db) return;
+    await deleteDoc(doc(db, 'teachers', id));
   };
 
   // Student CRUD
-  const addStudent = (student: Omit<Student, 'id'>) => {
-    setStudents(prev => [...prev, { ...student, id: Date.now().toString() }]);
+  const addStudent = async (student: Omit<Student, 'id'>) => {
+    if (!db) return;
+    await addDoc(collection(db, 'students'), student);
   };
 
-  const updateStudent = (id: string, student: Omit<Student, 'id'>) => {
-    setStudents(prev => prev.map(s => s.id === id ? { ...student, id } : s));
+  const updateStudent = async (id: string, student: Omit<Student, 'id'>) => {
+    if (!db) return;
+    await updateDoc(doc(db, 'students', id), student);
   };
 
-  const deleteStudent = (id: string) => {
-    setStudents(prev => prev.filter(s => s.id !== id));
+  const deleteStudent = async (id: string) => {
+    if (!db) return;
+    await deleteDoc(doc(db, 'students', id));
   };
 
   // Lead CRUD
-  const addLead = (lead: Omit<Lead, 'id' | 'status' | 'createdAt'>) => {
-    const newLead: Lead = {
+  const addLead = async (lead: Omit<Lead, 'id' | 'status' | 'createdAt'>) => {
+    if (!db) return;
+    await addDoc(collection(db, 'leads'), {
       ...lead,
-      id: Date.now().toString(),
       status: 'new',
-      createdAt: new Date(),
-    };
-    setLeads(prev => [newLead, ...prev]);
+      createdAt: Timestamp.now(),
+    });
   };
 
-  const updateLeadStatus = (id: string, status: Lead['status']) => {
-    setLeads(prev => prev.map(lead => lead.id === id ? { ...lead, status } : lead));
+  const updateLeadStatus = async (id: string, status: Lead['status']) => {
+    if (!db) return;
+    await updateDoc(doc(db, 'leads', id), { status });
   };
 
-  const deleteLead = (id: string) => {
-    setLeads(prev => prev.filter(lead => lead.id !== id));
+  const deleteLead = async (id: string) => {
+    if (!db) return;
+    await deleteDoc(doc(db, 'leads', id));
+  };
+
+  const addReview = async (review: Omit<Review, 'id' | 'createdAt'>) => {
+    if (!db) return null;
+    const ref = await addDoc(collection(db, 'reviews'), {
+      ...review,
+      createdAt: Timestamp.now(),
+    });
+    return ref.id;
+  };
+
+  const deleteReview = async (id: string) => {
+    if (!db) return;
+    await deleteDoc(doc(db, 'reviews', id));
   };
 
   return (
@@ -191,6 +243,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       teachers, addTeacher, updateTeacher, deleteTeacher,
       students, addStudent, updateStudent, deleteStudent,
       leads, addLead, updateLeadStatus, deleteLead,
+      reviews, addReview, deleteReview,
     }}>
       {children}
     </DataContext.Provider>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Trash2, Edit2, X, User, Mail, Phone, GraduationCap, Briefcase, FileText } from 'lucide-react';
+import { Plus, Trash2, Edit2, X, User, GraduationCap, Briefcase, FileText } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import type { Teacher } from '@/context/DataContext';
 
@@ -16,16 +16,14 @@ export default function TeachersTab() {
     education: '',
     bio: '',
     image: '',
-    phone: '',
-    email: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingTeacher) {
-      updateTeacher(editingTeacher.id, formData);
+      await updateTeacher(editingTeacher.id, formData);
     } else {
-      addTeacher(formData);
+      await addTeacher(formData);
     }
     resetForm();
   };
@@ -38,8 +36,6 @@ export default function TeachersTab() {
       education: '',
       bio: '',
       image: '',
-      phone: '',
-      email: '',
     });
     setEditingTeacher(null);
     setShowModal(false);
@@ -54,8 +50,6 @@ export default function TeachersTab() {
       education: teacher.education,
       bio: teacher.bio,
       image: teacher.image,
-      phone: teacher.phone,
-      email: teacher.email,
     });
     setShowModal(true);
   };
@@ -112,18 +106,14 @@ export default function TeachersTab() {
                 <GraduationCap className="w-4 h-4" />
                 <span>{teacher.education}</span>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Phone className="w-4 h-4" />
-                <span>{teacher.phone}</span>
-              </div>
             </div>
           </div>
         ))}
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={resetForm}>
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full my-8" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto p-4 sm:flex sm:items-center sm:justify-center" onClick={resetForm}>
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-2xl w-full my-6 mx-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold">{editingTeacher ? 'Өзгөртүү' : 'Жаңы мугалим'}</h3>
               <button onClick={resetForm} className="p-2 hover:bg-gray-100 rounded-lg">
@@ -211,39 +201,6 @@ export default function TeachersTab() {
                   rows={3}
                   required
                 />
-              </div>
-
-              {/* Phone & Email */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="flex items-center space-x-2 text-sm font-semibold mb-2">
-                    <Phone className="w-4 h-4 text-blue-600" />
-                    <span>Телефон *</span>
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+996 555 123 456"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="flex items-center space-x-2 text-sm font-semibold mb-2">
-                    <Mail className="w-4 h-4 text-blue-600" />
-                    <span>Email *</span>
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="teacher@okurmen.kg"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none"
-                    required
-                  />
-                </div>
               </div>
 
               {/* Image */}

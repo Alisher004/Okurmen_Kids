@@ -10,7 +10,7 @@ import {
   orderBy,
   Timestamp 
 } from 'firebase/firestore';
-import { db, isFirebaseConfigured } from './firebase';
+import { db } from './firebase';
 import type { Course, Teacher, Student, Lead } from '@/context/DataContext';
 
 // Courses Hook
@@ -19,7 +19,7 @@ export function useCourses() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isFirebaseConfigured()) {
+    if (!db) {
       setLoading(false);
       return;
     }
@@ -38,17 +38,17 @@ export function useCourses() {
   }, []);
 
   const addCourse = async (course: Omit<Course, 'id'>) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await addDoc(collection(db, 'courses'), course);
   };
 
   const updateCourse = async (id: string, course: Omit<Course, 'id'>) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await updateDoc(doc(db, 'courses', id), { ...course });
   };
 
   const deleteCourse = async (id: string) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await deleteDoc(doc(db, 'courses', id));
   };
 
@@ -61,7 +61,7 @@ export function useTeachers() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isFirebaseConfigured()) {
+    if (!db) {
       setLoading(false);
       return;
     }
@@ -80,17 +80,17 @@ export function useTeachers() {
   }, []);
 
   const addTeacher = async (teacher: Omit<Teacher, 'id'>) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await addDoc(collection(db, 'teachers'), teacher);
   };
 
   const updateTeacher = async (id: string, teacher: Omit<Teacher, 'id'>) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await updateDoc(doc(db, 'teachers', id), { ...teacher });
   };
 
   const deleteTeacher = async (id: string) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await deleteDoc(doc(db, 'teachers', id));
   };
 
@@ -103,7 +103,7 @@ export function useStudents() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isFirebaseConfigured()) {
+    if (!db) {
       setLoading(false);
       return;
     }
@@ -122,17 +122,17 @@ export function useStudents() {
   }, []);
 
   const addStudent = async (student: Omit<Student, 'id'>) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await addDoc(collection(db, 'students'), student);
   };
 
   const updateStudent = async (id: string, student: Omit<Student, 'id'>) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await updateDoc(doc(db, 'students', id), { ...student });
   };
 
   const deleteStudent = async (id: string) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await deleteDoc(doc(db, 'students', id));
   };
 
@@ -145,7 +145,7 @@ export function useLeads() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isFirebaseConfigured()) {
+    if (!db) {
       setLoading(false);
       return;
     }
@@ -168,7 +168,7 @@ export function useLeads() {
   }, []);
 
   const addLead = async (lead: Omit<Lead, 'id' | 'status' | 'createdAt'>) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await addDoc(collection(db, 'leads'), {
       ...lead,
       status: 'new',
@@ -177,12 +177,12 @@ export function useLeads() {
   };
 
   const updateLeadStatus = async (id: string, status: Lead['status']) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await updateDoc(doc(db, 'leads', id), { status });
   };
 
   const deleteLead = async (id: string) => {
-    if (!isFirebaseConfigured()) return;
+    if (!db) return;
     await deleteDoc(doc(db, 'leads', id));
   };
 

@@ -1,103 +1,48 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Quote, X, Send } from 'lucide-react';
-import { db, isFirebaseConfigured } from '@/lib/firebase';
+import { Star, Quote, X, Send, Trash2 } from 'lucide-react';
+import { useData } from '@/context/DataContext';
 
-interface Review {
-  id: string;
-  name: string;
-  review: string;
-  rating: number;
-  avatar: string;
-  createdAt: Date;
-}
+const OWN_REVIEW_IDS_KEY = 'okurmen_own_review_ids';
 
 export default function Testimonials() {
+  const { reviews, addReview, deleteReview } = useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', review: '', rating: 5 });
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [ownReviewIds, setOwnReviewIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    const loadReviews = async () => {
-      if (isFirebaseConfigured() && db) {
-        try {
-          const reviewsQuery = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
-          const snapshot = await getDocs(reviewsQuery);
-
-          if (!snapshot.empty) {
-            const loadedReviews = snapshot.docs.map(doc => {
-              const data = doc.data() as any;
-              return {
-                id: data.id || doc.id,
-                name: data.name,
-                review: data.review,
-                rating: data.rating,
-                avatar: data.avatar || '👧',
-                createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
-              } as Review;
-            });
-
-            setReviews(loadedReviews);
-            localStorage.setItem('okurmen_reviews', JSON.stringify(loadedReviews));
-            return;
-          }
-        } catch (error) {
-          console.error('Failed to load reviews from Firestore:', error);
-        }
-      }
-
-      const savedReviews = localStorage.getItem('okurmen_reviews');
-      if (savedReviews) {
-        const parsed = JSON.parse(savedReviews);
-        setReviews(parsed.map((r: any) => ({
-          ...r,
-          createdAt: new Date(r.createdAt),
-        })));
-      }
-    };
-
-    loadReviews();
+    setOwnReviewIds(JSON.parse(localStorage.getItem(OWN_REVIEW_IDS_KEY) || '[]'));
   }, []);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && reviews.length > 0) {
-      localStorage.setItem('okurmen_reviews', JSON.stringify(reviews));
-    }
-  }, [reviews]);
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const newReview: Review = {
-      id: Date.now().toString(),
+
+    const id = await addReview({
       name: formData.name,
       review: formData.review,
       rating: formData.rating,
-      avatar: '👧',
-      createdAt: new Date(),
-    };
+    });
 
-    setReviews(prev => [newReview, ...prev]);
-
-    if (isFirebaseConfigured() && db) {
-      try {
-        await addDoc(collection(db, 'reviews'), {
-          ...newReview,
-          createdAt: newReview.createdAt,
-        });
-      } catch (error) {
-        console.error('Failed to save review to Firestore:', error);
-      }
+    if (id && typeof window !== 'undefined') {
+      const nextIds = [id, ...ownReviewIds];
+      setOwnReviewIds(nextIds);
+      localStorage.setItem(OWN_REVIEW_IDS_KEY, JSON.stringify(nextIds));
     }
 
     setIsModalOpen(false);
     setFormData({ name: '', review: '', rating: 5 });
     alert('Рахмат! Сиздин пикириңиз кабыл алынды.');
+  };
+
+  const handleDeleteOwnReview = async (id: string) => {
+    await deleteReview(id);
+    const nextIds = ownReviewIds.filter((reviewId) => reviewId !== id);
+    setOwnReviewIds(nextIds);
+    localStorage.setItem(OWN_REVIEW_IDS_KEY, JSON.stringify(nextIds));
   };
 
   // Don't show section if no reviews
@@ -209,13 +154,22 @@ export default function Testimonials() {
                   className="flex-shrink-0 w-96"
                 >
                   <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl h-full relative overflow-hidden group">
+                    {ownReviewIds.includes(review.id) && (
+                      <button
+                        onClick={() => handleDeleteOwnReview(review.id)}
+                        className="absolute top-5 left-5 z-20 rounded-lg bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+                        aria-label="Пикирди өчүрүү"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
                     {/* Quote Icon */}
                     <Quote className="absolute top-6 right-6 w-16 h-16 text-slate-200 group-hover:text-blue-100 transition-colors duration-300" />
                     
                     {/* Avatar & Info */}
                     <div className="flex items-center space-x-4 mb-6 relative z-10">
                       <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-3xl shadow-lg">
-                        {review.avatar}
+                        {review.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
                         <h3 className="font-bold text-slate-950 text-lg">{review.name}</h3>
@@ -283,7 +237,7 @@ function ReviewModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 overflow-y-auto p-4 sm:flex sm:items-center sm:justify-center"
           >
             {/* Modal */}
             <motion.div
@@ -291,7 +245,7 @@ function ReviewModal({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 max-w-2xl w-full shadow-2xl relative"
+              className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative my-6 mx-auto"
             >
               {/* Close Button */}
               <button
