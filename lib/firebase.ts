@@ -25,11 +25,8 @@ if (isFirebaseConfigured()) {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
   db = getFirestore(app);
   auth = getAuth(app);
-} else {
-  if (typeof window !== 'undefined') {
-    console.warn('Firebase is not fully configured. Firestore and Auth will be disabled.');
-  }
+} else if (typeof window !== 'undefined') {
+  console.warn('Firebase is not fully configured. Firestore and Auth will be disabled.');
 }
 
 export { db, auth };
-

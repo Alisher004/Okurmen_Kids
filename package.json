@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "deploy:rules": "firebase deploy --only firestore:rules --project okurmen-kids",
     "start": "next start",
     "lint": "next lint"
   },

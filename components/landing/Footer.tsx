@@ -1,66 +1,100 @@
 'use client';
 
-import { Instagram, Youtube, Mail } from 'lucide-react';
+import { Instagram, Youtube, Mail, MapPin } from 'lucide-react';
+import LogoMark from './LogoMark';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+    <footer className="footer-luxury relative text-white">
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-brand-gold-500 to-transparent opacity-80" />
+
+      <div className="container relative z-10 mx-auto px-4 py-14">
+        <div className="mb-10 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-yellow-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">OK</span>
-              </div>
-              <span className="text-xl font-bold">Okurmen Kids</span>
-            </div>
-            <p className="text-gray-400 leading-relaxed">
+            <LogoMark variant="light" size="lg" showText={true} />
+            <p className="mt-4 max-w-xs leading-relaxed text-brand-navy-200">
               Балдар үчүн IT билим берүү борбору. Келечектин программисттерин тарбиялайбыз.
             </p>
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-4">Курстар</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li><a href="#courses" className="hover:text-white transition-colors">Frontend Development</a></li>
-              <li><a href="#courses" className="hover:text-white transition-colors">Scratch Programming</a></li>
-              <li><a href="#courses" className="hover:text-white transition-colors">Python Basics</a></li>
-              <li><a href="#courses" className="hover:text-white transition-colors">Web Design</a></li>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-brand-gold-400">Курстар</h3>
+            <ul className="space-y-2.5 text-brand-navy-200">
+              {['Frontend Development', 'Scratch Programming', 'Python Basics', 'Web Design'].map((c) => (
+                <li key={c}>
+                  <a href="#courses" className="transition-colors hover:text-brand-gold-300">
+                    {c}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-4">Байланыш</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>+996 500 677 798</li>
-              <li>okurmen2022@gmail.com</li>
-              <li>Бишкек шаары, Табышалиева 29</li>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-brand-gold-400">Байланыш</h3>
+            <ul className="space-y-3 text-brand-navy-200">
+              <li>
+                <a href="tel:+996500677798" className="hover:text-white transition-colors">
+                  +996 500 677 798
+                </a>
+              </li>
+              <li>
+                <a href="mailto:okurmen2022@gmail.com" className="hover:text-white transition-colors">
+                  okurmen2022@gmail.com
+                </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-gold-400" />
+                <span>Бишкек шаары, Табышалиева 29</span>
+              </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-bold text-lg mb-4">Социалдык тармактар</h3>
-            <div className="flex space-x-4">
-              <a href="https://2gis.kg/bishkek/firm/70000001078008057" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                </svg>
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-brand-gold-400">
+              Социалдык тармактар
+            </h3>
+            <div className="flex gap-3">
+              <a
+                href="https://2gis.kg/bishkek/firm/70000001078008057"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                aria-label="2GIS"
+              >
+                <span className="text-xs font-bold">2GIS</span>
               </a>
-              <a href="https://www.instagram.com/okurmen_kids/" target='_blank' rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 transition-colors">
-                <Instagram className="w-5 h-5" />
+              <a
+                href="https://www.instagram.com/okurmen_kids/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                aria-label="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
               </a>
-              <a href="https://www.youtube.com/@OKURMENKIDS" target='_blank' rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors">
-                <Youtube className="w-5 h-5" />
+              <a
+                href="https://www.youtube.com/@OKURMENKIDS"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                aria-label="YouTube"
+              >
+                <Youtube className="h-5 w-5" />
               </a>
-              <a href="mailto:okurmen2022@gmail.com" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-colors">
-                <Mail className="w-5 h-5" />
+              <a
+                href="mailto:okurmen2022@gmail.com"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                aria-label="Email"
+              >
+                <Mail className="h-5 w-5" />
               </a>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p>&copy; Okurmen Kids. Бардык укуктар корголгон.</p>
+        <div className="border-t border-brand-navy-800 pt-8 text-center text-sm text-brand-navy-400">
+          <p>&copy; {new Date().getFullYear()} Okurmen Kids. Бардык укуктар корголгон.</p>
         </div>
       </div>
     </footer>

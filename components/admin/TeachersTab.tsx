@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Plus, Trash2, Edit2, X, User, GraduationCap, Briefcase, FileText } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import type { Teacher } from '@/context/DataContext';
+import ImageUrlField from './ImageUrlField';
+import { getFirestoreErrorMessage } from '@/lib/firestoreAdmin';
 
 export default function TeachersTab() {
   const { teachers, addTeacher, updateTeacher, deleteTeacher } = useData();
@@ -17,15 +19,21 @@ export default function TeachersTab() {
     bio: '',
     image: '',
   });
+  const [saveError, setSaveError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingTeacher) {
-      await updateTeacher(editingTeacher.id, formData);
-    } else {
-      await addTeacher(formData);
+    setSaveError('');
+    try {
+      if (editingTeacher) {
+        await updateTeacher(editingTeacher.id, formData);
+      } else {
+        await addTeacher(formData);
+      }
+      resetForm();
+    } catch (err) {
+      setSaveError(getFirestoreErrorMessage(err));
     }
-    resetForm();
   };
 
   const resetForm = () => {
@@ -37,6 +45,7 @@ export default function TeachersTab() {
       bio: '',
       image: '',
     });
+    setSaveError('');
     setEditingTeacher(null);
     setShowModal(false);
   };
@@ -112,16 +121,22 @@ export default function TeachersTab() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 overflow-y-auto p-4 sm:flex sm:items-center sm:justify-center" onClick={resetForm}>
-          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-2xl w-full my-6 mx-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={resetForm}
+        >
+          <div
+            className="flex max-h-[min(92vh,820px)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-6 py-4">
               <h3 className="text-2xl font-bold">{editingTeacher ? 'Өзгөртүү' : 'Жаңы мугалим'}</h3>
-              <button onClick={resetForm} className="p-2 hover:bg-gray-100 rounded-lg">
+              <button type="button" onClick={resetForm} className="rounded-lg p-2 hover:bg-gray-100">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-6 py-4">
               {/* Name */}
               <div>
                 <label className="flex items-center space-x-2 text-sm font-semibold mb-2">
@@ -203,23 +218,22 @@ export default function TeachersTab() {
                 />
               </div>
 
-              {/* Image */}
-              <div>
-                <label className="block text-sm font-semibold mb-2">Сүрөт URL *</label>
-                <input
-                  type="text"
-                  placeholder="/teacher-name.png"
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none"
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">Сүрөттү public/ папкасына коюңуз</p>
-              </div>
+              <ImageUrlField
+                value={formData.image}
+                onChange={(image) => setFormData({ ...formData, image })}
+                placeholder="https://example.com/teacher.jpg"
+                required
+              />
+
+              {saveError && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 whitespace-pre-line">
+                  {saveError}
+                </div>
+              )}
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-yellow-500 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-shadow"
+                className="w-full shrink-0 rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-4 font-semibold text-white transition-shadow hover:shadow-lg"
               >
                 {editingTeacher ? 'Сактоо' : 'Кошуу'}
               </button>

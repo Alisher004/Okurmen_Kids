@@ -32,10 +32,24 @@ function AnimatedCounter({ end, duration = 1.5 }: { end: number; duration?: numb
   return <span>{count}</span>;
 }
 
-export default function AnalyticsTab() {
+type AdminTab = 'analytics' | 'leads' | 'courses' | 'teachers' | 'students' | 'reviews';
+
+type AnalyticsTabProps = {
+  onNavigate?: (tab: AdminTab) => void;
+};
+
+export default function AnalyticsTab({ onNavigate }: AnalyticsTabProps) {
   const { students, leads, teachers, courses, reviews } = useData();
 
-  const stats = [
+  const stats: {
+    label: string;
+    value: number;
+    icon: typeof Users;
+    color: string;
+    bgColor: string;
+    textColor: string;
+    tab: AdminTab;
+  }[] = [
     {
       label: 'Мыкты студенттер',
       value: students.length,
@@ -43,6 +57,7 @@ export default function AnalyticsTab() {
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-100',
       textColor: 'text-blue-600',
+      tab: 'students',
     },
     {
       label: 'Катталуулар',
@@ -51,6 +66,7 @@ export default function AnalyticsTab() {
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-100',
       textColor: 'text-purple-600',
+      tab: 'leads',
     },
     {
       label: 'Жалпы Пикирлер',
@@ -59,6 +75,7 @@ export default function AnalyticsTab() {
       color: 'from-yellow-500 to-yellow-600',
       bgColor: 'bg-yellow-100',
       textColor: 'text-yellow-600',
+      tab: 'reviews',
     },
     {
       label: 'Жалпы Курстар',
@@ -67,6 +84,7 @@ export default function AnalyticsTab() {
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-100',
       textColor: 'text-green-600',
+      tab: 'courses',
     },
     {
       label: 'Жалпы Мугалимдер',
@@ -75,6 +93,7 @@ export default function AnalyticsTab() {
       color: 'from-pink-500 to-pink-600',
       bgColor: 'bg-pink-100',
       textColor: 'text-pink-600',
+      tab: 'teachers',
     },
   ];
 
@@ -107,12 +126,14 @@ export default function AnalyticsTab() {
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {stats.map((stat, index) => (
-          <motion.div
+          <motion.button
             key={stat.label}
+            type="button"
+            onClick={() => onNavigate?.(stat.tab)}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+            className="w-full overflow-hidden rounded-2xl bg-white text-left shadow-lg transition-all duration-300 hover:shadow-xl hover:ring-2 hover:ring-blue-200"
           >
             <div className={`h-2 bg-gradient-to-r ${stat.color}`} />
             <div className="p-6">
@@ -126,7 +147,7 @@ export default function AnalyticsTab() {
               </div>
               <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
             </div>
-          </motion.div>
+          </motion.button>
         ))}
       </div>
 

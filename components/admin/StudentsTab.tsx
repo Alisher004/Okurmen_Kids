@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Plus, Trash2, Edit2, X } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import type { Student } from '@/context/DataContext';
+import ImageUrlField from './ImageUrlField';
 
 export default function StudentsTab() {
   const { students, addStudent, updateStudent, deleteStudent } = useData();
@@ -83,8 +84,16 @@ export default function StudentsTab() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <input type="text" placeholder="Аты-жөнү" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none" required />
               <input type="text" placeholder="Группа / курс" value={formData.course} onChange={(e) => setFormData({...formData, course: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none" required />
-              <input type="text" placeholder="Сүрөт URL" value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none" required />
-              <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-yellow-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-shadow">
+              <ImageUrlField
+                value={formData.image}
+                onChange={(image) => setFormData({ ...formData, image })}
+                placeholder="https://example.com/student.jpg"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-3 font-semibold text-white transition-shadow hover:shadow-lg"
+              >
                 {editingStudent ? 'Сактоо' : 'Кошуу'}
               </button>
             </form>

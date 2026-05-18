@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { FirebaseError } from 'firebase/app';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import {
   LogOut,
@@ -22,38 +24,43 @@ import TeachersTab from '@/components/admin/TeachersTab';
 import StudentsTab from '@/components/admin/StudentsTab';
 import AnalyticsTab from '@/components/admin/AnalyticsTab';
 import ReviewsTab from '@/components/admin/ReviewsTab';
-
-const ADMIN_AUTH_STORAGE_KEY = 'okurmen_admin_authenticated';
+import { auth } from '@/lib/firebase';
+import AdminLoginScreen from '@/components/admin/AdminLoginScreen';
 
 export default function AdminPanel() {
-  const { leads, courses, teachers, students, reviews } = useData();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { leads, courses, teachers, students, reviews, authUser, authLoading } = useData();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSigningIn, setIsSigningIn] = useState(false);
   const [activeTab, setActiveTab] = useState<'analytics' | 'leads' | 'courses' | 'teachers' | 'students' | 'reviews'>('analytics');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'okurmenadmin@gmail.com' && password === 'okurmen312') {
-      localStorage.setItem(ADMIN_AUTH_STORAGE_KEY, 'true');
-      setIsAuthenticated(true);
-      setError('');
-    } else {
-      setError('Туура эмес логин же пароль');
+    if (!auth) {
+      setError('Firebase Auth конфигурациясы табылган жок.');
+      return;
+    }
+    setIsSigningIn(true);
+    setError('');
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      if (err instanceof FirebaseError && err.code === 'auth/invalid-credential') {
+        setError('Туура эмес логин же пароль');
+      } else {
+        setError('Кирүү мүмкүн болбой жатат.');
+      }
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem(ADMIN_AUTH_STORAGE_KEY);
-    setIsAuthenticated(false);
+  const handleLogout = async () => {
+    if (auth) await signOut(auth);
   };
 
-  useEffect(() => {
-    setIsAuthenticated(localStorage.getItem(ADMIN_AUTH_STORAGE_KEY) === 'true');
-  }, []);
-
-  if (isAuthenticated === null) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-[#171827] flex items-center justify-center">
         <div className="text-slate-300 font-semibold">Жүктөлүүдө...</div>
@@ -61,59 +68,20 @@ export default function AdminPanel() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!authUser) {
     return (
-      <div className="min-h-screen bg-[#171827] flex items-center justify-center p-4 text-white">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md rounded-[28px] border border-white/10 bg-white/[0.07] p-8 shadow-2xl backdrop-blur-xl"
-        >
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-sky-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-sky-500/25">
-              <span className="text-white font-bold text-2xl">OK</span>
-            </div>
-            <h1 className="text-3xl font-bold mb-2">Admin Panel</h1>
-            <p className="text-slate-400">Окурмен Кидс башкаруу панели</p>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/10 text-white placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 outline-none transition-all"
-                placeholder="Email жазыңыз"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-2">Пароль</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/10 text-white placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 outline-none transition-all"
-                placeholder="Паролду жазыңыз"
-              />
-              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="w-full bg-sky-500 hover:bg-sky-400 text-white py-3 rounded-xl font-semibold shadow-lg shadow-sky-500/25 transition-colors"
-            >
-              Кирүү
-            </motion.button>
-          </form>
-        </motion.div>
-      </div>
+      <AdminLoginScreen
+        email={email}
+        password={password}
+        error={error}
+        isSigningIn={isSigningIn}
+        onEmailChange={setEmail}
+        onPasswordChange={setPassword}
+        onLogin={handleLogin}
+      />
     );
   }
+
 
   const stats = {
     leads: leads.length,
@@ -132,13 +100,23 @@ export default function AdminPanel() {
     { id: 'reviews', label: 'Пикирлер', icon: MessageSquare, count: stats.reviews },
   ];
 
-  const overviewCards = [
+  type AdminTab = typeof activeTab;
+
+  const overviewCards: {
+    label: string;
+    value: number;
+    icon: typeof Users;
+    gradient: string;
+    delta: string;
+    tab: AdminTab;
+  }[] = [
     {
       label: 'Катталуулар',
       value: stats.leads,
       icon: Users,
       gradient: 'from-sky-500 to-blue-600',
       delta: '+12%',
+      tab: 'leads',
     },
     {
       label: 'Курстар',
@@ -146,6 +124,7 @@ export default function AdminPanel() {
       icon: BookOpen,
       gradient: 'from-amber-400 to-orange-500',
       delta: '+4%',
+      tab: 'courses',
     },
     {
       label: 'Пикирлер',
@@ -153,6 +132,7 @@ export default function AdminPanel() {
       icon: MessageSquare,
       gradient: 'from-cyan-400 to-teal-500',
       delta: '+18%',
+      tab: 'reviews',
     },
   ];
 
@@ -260,7 +240,12 @@ export default function AdminPanel() {
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
                 {overviewCards.map((card) => (
-                  <div key={card.label} className={`rounded-[22px] bg-gradient-to-br ${card.gradient} p-5 shadow-lg`}>
+                  <button
+                    key={card.label}
+                    type="button"
+                    onClick={() => setActiveTab(card.tab)}
+                    className={`rounded-[22px] bg-gradient-to-br ${card.gradient} p-5 text-left shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]`}
+                  >
                     <div className="mb-5 flex items-center justify-between">
                       <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/18">
                         <card.icon className="h-5 w-5" />
@@ -269,7 +254,7 @@ export default function AdminPanel() {
                     </div>
                     <div className="text-3xl font-black">{card.value}</div>
                     <div className="mt-1 text-sm font-semibold text-white/85">{card.label}</div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -282,7 +267,11 @@ export default function AdminPanel() {
             transition={{ duration: 0.25 }}
             className="admin-content"
             >
-            {activeTab === 'analytics' && <AnalyticsTab />}
+            {activeTab === 'analytics' && (
+              <AnalyticsTab
+                onNavigate={(tab) => setActiveTab(tab)}
+              />
+            )}
             {activeTab === 'leads' && <LeadsTab />}
             {activeTab === 'courses' && <CoursesTab />}
             {activeTab === 'teachers' && <TeachersTab />}

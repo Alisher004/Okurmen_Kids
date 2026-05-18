@@ -1,83 +1,91 @@
 'use client';
 
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X, MessageCircle } from 'lucide-react';
+import LogoMark from './LogoMark';
+import { useData } from '@/context/DataContext';
 
 export default function Navbar() {
+  const { courses, teachers, students, publicDataLoaded } = useData();
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const whatsappNumber = '+996500677798';
   const whatsappMessage = 'Салам! Окурмен Kids курстары жөнүндө маалымат алгым келет.';
-  
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const handleWhatsAppClick = () => {
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(url, '_blank');
   };
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsOpen(false);
-    }
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setIsOpen(false);
   };
 
+  const navLink =
+    'relative text-sm font-medium text-white/90 transition-colors hover:text-brand-gold-300 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-brand-gold-400 after:transition-all hover:after:w-full';
+
+  const navItems = [
+    publicDataLoaded && courses.length > 0 && { id: 'courses', label: 'Курстар' },
+    publicDataLoaded && teachers.length > 0 && { id: 'teachers', label: 'Мугалимдер' },
+    publicDataLoaded && students.length > 0 && { id: 'students', label: 'Студенттер' },
+    { id: 'contact', label: 'Байланыш' },
+  ].filter(Boolean) as { id: string; label: string }[];
+
   return (
-    <nav className="fixed top-0 w-full bg-slate-900/70 backdrop-blur-xl border-b border-white/10 z-50 transition-all duration-300">
+    <nav
+      className={`nav-luxury fixed top-0 z-50 w-full transition-all duration-500 ${
+        scrolled ? 'shadow-luxury backdrop-blur-xl' : 'backdrop-blur-md'
+      }`}
+    >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl">OK</span>
-            </div>
-            <span className="text-xl font-bold text-white">Okurmen Kids</span>
-          </div>
+        <div className="flex h-16 items-center justify-between md:h-[4.5rem]">
+          <button onClick={() => scrollToSection('hero')} className="shrink-0">
+            <LogoMark size="lg" variant="light" showText={true} />
+          </button>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <button onClick={() => scrollToSection('courses')} className="text-white/80 hover:text-white transition-colors font-medium">
-              Курстар
-            </button>
-            <button onClick={() => scrollToSection('teachers')} className="text-white/80 hover:text-white transition-colors font-medium">
-              Мугалимдер
-            </button>
-            <button onClick={() => scrollToSection('contact')} className="text-white/80 hover:text-white transition-colors font-medium">
-              Байланыш
-            </button>
-            <button 
-              onClick={handleWhatsAppClick}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-lg hover:shadow-xl transition-all duration-300 font-semibold hover:scale-105"
-            >
-              📱 Жазылуу
+          <div className="hidden items-center gap-8 md:flex">
+            {navItems.map((item) => (
+              <button key={item.id} onClick={() => scrollToSection(item.id)} className={navLink}>
+                {item.label}
+              </button>
+            ))}
+            <button onClick={handleWhatsAppClick} className="btn-primary !py-2.5 !text-sm">
+              <MessageCircle className="h-4 w-4" />
+              Жазылуу
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button 
+          <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="rounded-xl p-2 text-white transition-colors hover:bg-white/10 md:hidden"
+            aria-label="Меню"
           >
-            {isOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white" />}
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden py-4 space-y-3 border-t border-white/10">
-            <button onClick={() => scrollToSection('courses')} className="block w-full text-left px-4 py-2 text-white/80 hover:bg-white/10 rounded-lg transition-colors">
-              Курстар
-            </button>
-            <button onClick={() => scrollToSection('teachers')} className="block w-full text-left px-4 py-2 text-white/80 hover:bg-white/10 rounded-lg transition-colors">
-              Мугалимдер
-            </button>
-            <button onClick={() => scrollToSection('contact')} className="block w-full text-left px-4 py-2 text-white/80 hover:bg-white/10 rounded-lg transition-colors">
-              Байланыш
-            </button>
-            <button 
-              onClick={handleWhatsAppClick}
-              className="block w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg font-semibold"
-            >
-              📱 Жазылуу
+          <div className="space-y-1 border-t border-white/10 py-4 md:hidden">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className="block w-full rounded-xl px-4 py-3 text-left font-medium text-white/90 hover:bg-white/10"
+              >
+                {item.label}
+              </button>
+            ))}
+            <button onClick={handleWhatsAppClick} className="btn-primary mt-2 w-full">
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp жазылуу
             </button>
           </div>
         )}

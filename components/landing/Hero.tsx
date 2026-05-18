@@ -2,8 +2,9 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
+import { MessageCircle, Sparkles, ArrowRight } from 'lucide-react';
+import { useData } from '@/context/DataContext';
 
-// Counter Animation Component
 function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -35,106 +36,115 @@ function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number
 }
 
 export default function Hero() {
-  const whatsappNumber = '+996500677798';
+  const { courses, teachers, students, publicDataLoaded } = useData();
   const whatsappMessage = 'Салам! Окурмен Kids курстары жөнүндө маалымат алгым келет.';
-  
+
   const handleWhatsAppClick = () => {
     const url = `https://wa.me/+996500677798?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(url, '_blank');
   };
 
+  const stats = publicDataLoaded
+    ? [
+        { value: students.length, label: 'Студенттер', suffix: '+' },
+        { value: teachers.length, label: 'Мугалимдер', suffix: '+' },
+        { value: courses.length, label: 'Курстар', suffix: '+' },
+      ].filter((s) => s.value > 0)
+    : [];
+
   return (
-    <section className="pt-24 pb-16 md:pt-32 md:pb-24 relative">
+    <section id="hero" className="relative pt-28 pb-16 md:pt-36 md:pb-24">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
+        <motion.div
+          className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-flex items-center space-x-2 bg-blue-50/90 backdrop-blur-md border border-blue-200 px-6 py-3 rounded-full mb-8 shadow-sm">
-              <span className="text-sm md:text-base font-semibold text-slate-800">
-                🎓 Бишкектеги балдар үчүн IT академиясы
-              </span>
-            </div>
+            <span className="section-badge mb-6 inline-flex">
+              <Sparkles className="h-4 w-4 text-brand-gold-500" />
+              Бишкектеги балдар үчүн IT академиясы
+            </span>
 
-            <h1 className="text-4xl md:text-6xl font-bold text-slate-950 mb-6 leading-tight">
-              9-15 жаштагы балдар үчүн{' '}
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                IT курстар
-              </span>
+            <h1 className="mb-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-brand-navy-700 md:text-5xl lg:text-6xl">
+              9–15 жаштагы балдар үчүн{' '}
+              <span className="gradient-brand-text">IT курстар</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-slate-700 mb-8 leading-relaxed">
-              Балдарыңыздын келечегин бүгүн баштаңыз. Программалоо, веб-дизайн жана логика өнүктүрүү курстары.
+            <p className="mb-8 max-w-xl text-lg leading-relaxed text-brand-navy-600 md:text-xl">
+              Программалоо, веб-дизайн жана логиканы практикалык долбоорлор менен үйрөтөбүз.
+              Балдарыңыздын келечегин бүгүн баштаңыз.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <div className="mb-10 flex flex-col gap-4 sm:flex-row">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={handleWhatsAppClick}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl transition-all duration-300"
+                className="btn-primary px-8 py-4 text-lg"
               >
-                📱 WhatsApp аркылуу жазылуу
+                <MessageCircle className="h-5 w-5" />
+                WhatsApp аркылуу жазылуу
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-white/90 backdrop-blur-md border-2 border-slate-200 hover:bg-blue-50 text-slate-900 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-300"
+                className="btn-secondary px-8 py-4 text-lg"
               >
                 Курстарды көрүү
+                <ArrowRight className="h-5 w-5 text-brand-gold-500" />
               </motion.button>
             </div>
 
-            {/* Animated Stats */}
-            <div className="grid grid-cols-3 gap-6">
-              {[
-                { value: 500, label: 'Студенттер', suffix: '+' },
-                { value: 10, label: 'Мугалимдер', suffix: '+' },
-                { value: 3, label: 'Курстар', suffix: '+' },
-              ].map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className="text-center bg-white/90 backdrop-blur-md border border-slate-200 p-4 rounded-xl shadow-lg"
-                >
-                  <div className="text-2xl md:text-3xl font-bold text-slate-950">
-                    <AnimatedCounter end={stat.value} />
-                    {stat.suffix}
-                  </div>
-                  <div className="text-sm text-slate-600">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
+            {stats.length > 0 && (
+              <div className="grid grid-cols-3 gap-4">
+                {stats.map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    className="stat-card-luxury"
+                  >
+                    <div className="stat-value text-2xl font-bold md:text-3xl">
+                      <AnimatedCounter end={stat.value} />
+                      <span className="text-gold-shine">{stat.suffix}</span>
+                    </div>
+                    <div className="mt-1 text-xs font-medium text-brand-navy-500 md:text-sm">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.div>
 
-          {/* Right Side - Video */}
+          {/* Видео / GIF — толук көрүнүш */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="relative"
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="relative flex min-h-[280px] items-center justify-center lg:min-h-[420px]"
           >
-            <div className="relative w-full h-[500px] md:h-[560px]  overflow-hidden">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-navy-400/15 via-transparent to-brand-gold-400/20 blur-2xl" />
+            <div className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy-50/80 to-brand-gold-50/50 p-2 shadow-luxury md:rounded-3xl md:p-3">
               <video
                 autoPlay
                 muted
                 loop
                 playsInline
-                className="w-full h-full object-content"
+                className="mx-auto block max-h-[min(70vh,520px)] w-full object-contain"
+                poster="/teachers.png"
               >
                 <source src="/video.mp4" type="video/mp4" />
               </video>
-              {/* Optional overlay for better integration */}
-              {/* <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent pointer-events-none" /> */}
             </div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

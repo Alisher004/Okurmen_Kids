@@ -1,94 +1,89 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useData } from '@/context/DataContext';
+import { MessageCircle, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
 import Image from 'next/image';
+import { useData } from '@/context/DataContext';
+import SectionHeading from './SectionHeading';
 
-// Course images mapping
-const courseImages: Record<string, string> = {
-  'Frontend Development': 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop',
-  'Scratch Programming': 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=400&h=300&fit=crop',
-  'Python Basics': 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&h=300&fit=crop',
-  'Web Design': 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop',
-};
+const PLACEHOLDER =
+  'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop';
 
 export default function Courses() {
-  const { courses } = useData();
-
+  const { courses, publicDataLoaded } = useData();
   const whatsappNumber = '+996500677798';
-  
+
+  if (!publicDataLoaded || courses.length === 0) return null;
+
   const handleWhatsAppClick = (courseName: string) => {
-    const message = `Салам! ${courseName} курс боюнча толук маалымат бере аласызбы?.`;
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+    const message = `Салам! ${courseName} курс боюнча толук маалымат бере аласызбы?`;
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
-    <section id="courses" className="py-20 relative">
+    <section id="courses" className="section-alt relative py-20 md:py-28">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-950 mb-4">
-            Биздин курстар
-          </h2>
-          <p className="text-xl text-slate-700 max-w-2xl mx-auto">
-            Ар бир курс балдардын жаш өзгөчөлүктөрүнө ылайыкташтырылган
-          </p>
-        </motion.div>
+        <SectionHeading
+          badgeIcon={GraduationCap}
+          badge="Билим берүү программалары"
+          title="Биздин курстар"
+          subtitle="Ар бир курс балдардын жаш өзгөчөлүктөрүнө ылайыкташтырылган"
+        />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="-mx-4 scroll-row px-4 md:-mx-0 md:px-0">
           {courses.map((course, index) => {
-            const imageUrl = courseImages[course.title] || courseImages['Frontend Development'];
-            
+            const imageUrl = course.image || PLACEHOLDER;
+
             return (
-              <motion.div
+              <motion.article
                 key={course.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 28 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="bg-white/95 backdrop-blur-md rounded-2xl hover:shadow-2xl transition-all duration-300 overflow-hidden border border-white/20"
+                transition={{ delay: index * 0.08 }}
+                className="scroll-row-card brand-card-luxury group overflow-hidden"
               >
-                {/* Course Image */}
                 <div className="relative h-48 overflow-hidden">
                   <Image
                     src={imageUrl}
                     alt={course.title}
                     fill
-                    className="object-cover transition-transform duration-500 hover:scale-110"
+                    unoptimized={!imageUrl.includes('images.unsplash.com')}
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${course.color} opacity-60`} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy-800/80 via-brand-navy-700/30 to-transparent" />
+                  <div className="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/25 backdrop-blur-md">
+                    <BookOpen className="h-5 w-5 text-white drop-shadow" />
+                  </div>
                 </div>
-                
+
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{course.title}</h3>
-                  
-                  <div className="flex items-center space-x-2 mb-3">
-                    <span className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full font-medium">
+                  <h3 className="mb-3 text-xl font-bold text-brand-navy-700">{course.title}</h3>
+
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-brand-navy-50 px-3 py-1 text-xs font-semibold text-brand-navy-700">
+                      <Users className="h-3.5 w-3.5 text-brand-gold-500" />
                       {course.age}
                     </span>
-                    <span className="bg-amber-100 text-amber-700 text-sm px-3 py-1 rounded-full font-medium">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-brand-gold-50 px-3 py-1 text-xs font-semibold text-brand-gold-800">
+                      <Clock className="h-3.5 w-3.5" />
                       {course.duration}
                     </span>
                   </div>
-                  
-                  <p className="text-gray-600 mb-6 leading-relaxed">
+
+                  <p className="mb-6 line-clamp-3 text-sm leading-relaxed text-brand-navy-600">
                     {course.description}
                   </p>
-                  
+
                   <button
                     onClick={() => handleWhatsAppClick(course.title)}
-                    className={`w-full bg-gradient-to-r ${course.color || 'from-blue-500 to-blue-600'} text-white py-3 rounded-lg font-semibold border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]`}
+                    className="gradient-cta flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-brand-navy-800 transition-all hover:brightness-110"
                   >
-                    📱 WhatsApp аркылуу жазылуу
+                    <MessageCircle className="h-4 w-4" />
+                    Жазылуу
                   </button>
                 </div>
-              </motion.div>
+              </motion.article>
             );
           })}
         </div>
