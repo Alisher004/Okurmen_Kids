@@ -20,15 +20,15 @@ export default function Teachers() {
           subtitle="Тажрыйбалуу жана балдарды сүйгөн адистер"
         />
 
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="-mx-4 scroll-row px-4 md:-mx-0 md:px-0">
           {teachers.map((teacher, index) => (
             <motion.div
               key={teacher.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="teacher-flip-card group relative h-[390px]"
+              transition={{ delay: index * 0.08 }}
+              className="scroll-row-card teacher-flip-card group relative h-[390px]"
               tabIndex={0}
             >
               <div className="teacher-flip-inner relative h-full rounded-3xl">
