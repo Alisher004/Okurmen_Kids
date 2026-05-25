@@ -1,231 +1,45 @@
-# Okurmen Kids - IT Academy Website 🚀
+# Okurmen Kids — IT Academy Website
 
-Бишкектеги балдар үчүн IT академиясынын заманбап веб-сайты.
+Next.js 14 + Firebase. Лендинг, админ панель, менеджер кабинети.
 
-## ✨ Жаңы өзгөчөлүктөр (Production Ready)
-
-### 🎨 Визуалдык жакшыртуулар
-- ✅ **Көк-Алтын градиент фон** - Компаниянын түстөрү (көк - сол жогору, алтын - оң төмөн)
-- ✅ **3D анимациялар** - Үзгүлтүксүз жылмакай калкыган геометриялык фигуралар
-- ✅ **Glass Morphism дизайн** - Заманбап айнек эффекти
-- ✅ **Жарык бөлүкчөлөр** - Анимацияланган жарык эффекттери
-- ✅ **Жакшыртылган көлөкөлөр** - Тереңдик жана профессионалдуулук
-
-### 🔥 Firebase интеграциясы
-- ✅ **Реалдуу убакыт маалымат базасы** - Firestore
-- ✅ **Автоматтык синхронизация** - Бардык колдонуучулар үчүн
-- ✅ **Production-ready** - Коопсуздук эрежелери менен
-- ✅ **LocalStorage fallback** - Firebase жок болсо иштейт
-
-### 🎯 Өзгөчөлүктөр
-
-#### 🌐 Лендинг баракча
-- **Hero баннер** - Көрүнүктүү баштапкы бөлүм (калкыган анимация менен)
-- **Курстар** - 4 курс (Frontend, Scratch, Python, Web Design)
-- **Мугалимдер** - 3D карусель толук анкета менен
-- **Мыкты студенттер** - Айдын эң мыкты студенттери
-- **Проекттер** - Студенттердин иштери
-- **Пикирлер** - Ата-энелердин пикирлери
-- **Байланыш** - Арыз формасы (glass эффект менен)
-
-#### 👨‍💼 Админ панель
-**Кирүү маалыматтары:**
-- Email: `okurmenadmin@gmail.com`
-- Пароль: `okurmen312`
-
-**Мүмкүнчүлүктөр:**
-1. **Арыздар** - Сайттан келген арыздарды көрүү жана башкаруу
-2. **Курстар** - CRUD (кошуу, өзгөртүү, өчүрүү)
-3. **Мугалимдер** - Толук анкета менен CRUD
-4. **Студенттер** - Мыкты студенттерди башкаруу
-
-## 🚀 Тез баштоо
+## Тез баштоо
 
 ```bash
-# Зависимостиларды орнотуу
 npm install
-
-# Development режиминде иштетүү
+cp .env.local.example .env.local
 npm run dev
-
-# Production үчүн түзүү
-npm run build
-npm start
 ```
 
-Сайт `http://localhost:3000` дарегинде ачылат
+- Сайт: http://localhost:3000
+- Админ: http://localhost:3000/admin
+- Менеджер: http://localhost:3000/manager
 
-## 📚 Документация
+## Firebase жана ролдор
 
-- **`QUICK-START.md`** - Тез баштоо боюнча колдонмо
-- **`FIREBASE-SETUP.md`** - Firebase орнотуу боюнча толук колдонмо
-- **`PRODUCTION-IMPROVEMENTS.md`** - Бардык жакшыртуулардын толук тизмеси
-- **`ADMIN-GUIDE.md`** - Админ панелди колдонуу боюнча колдонмо
+1. `.env.local` — Firebase маанилери + `NEXT_PUBLIC_ADMIN_EMAILS`
+2. `npm run deploy:rules` — Firestore эрежелерин жайгаштыруу
+3. **users/{uid}** документи:
+   - `role: "admin"` — толук админ панель
+   - `role: "manager"` — менеджер кабинети гана
+4. Legacy: `admins/{uid}` — админ уруксаты (артка шайкештик)
 
-## 💾 Маалыматтарды сактоо
+## Firestore коллекциялары
 
-### Эки режим:
+| Коллекция | Максат |
+|-----------|--------|
+| `banners` | Hero carousel |
+| `faq` | Көп берилүүчү суроолор |
+| `testQuestions` | IT тест |
+| `videoReviews` | Видео пикирлер |
+| `leads` | Жазылуу формалары |
+| `trialLessons` | Пробный урок |
+| `testResults` | Тест жыйынтыктары |
+| `courses`, `teachers`, `students`, `projects` | Контент |
 
-1. **LocalStorage (Development)**
-   - Браузерде сакталат
-   - Firebase жок болсо автоматтык колдонулат
-   - Тез иштөө үчүн
+## Deploy
 
-2. **Firebase Firestore (Production)**
-   - Реалдуу убакыт синхронизациясы
-   - Коопсуз жана масштабдуу
-   - Бардык түзмөктөрдө иштейт
-   - Орнотуу үчүн `FIREBASE-SETUP.md` караңыз
-
-## 📁 Структура
-
-```
-app/
-  ├── page.tsx              # Лендинг баракча
-  ├── admin/page.tsx        # Админ панель
-  └── layout.tsx            # Background3D менен
-
-components/
-  ├── Background3D.tsx      # 🆕 Анимацияланган фон
-  ├── landing/              # Лендинг компоненттери
-  │   ├── Hero.tsx          # Жакшыртылган hero
-  │   ├── Courses.tsx       # Glass карталар
-  │   ├── Teachers.tsx      # 3D карусель
-  │   ├── TopStudents.tsx   
-  │   ├── Projects.tsx      
-  │   ├── Testimonials.tsx  
-  │   ├── Contact.tsx       # Glass форма
-  │   ├── Navbar.tsx        # Glass navbar
-  │   └── Footer.tsx        
-  └── admin/                # Админ компоненттери
-
-lib/
-  ├── firebase.ts           # 🆕 Firebase конфигурациясы
-  └── firebaseHooks.ts      # 🆕 Firebase hooks
-
-context/
-  └── DataContext.tsx       # Маалыматтарды башкаруу
-
-public/
-  ├── baner.png
-  ├── teachers.png
-  ├── baytur.png
-  ├── khadizha.png
-  └── sanjar.png
-```
-
-## 🎨 Дизайн
-
-### Компаниянын түстөрү
-- **Көк (Blue)**: `#2563eb` (blue-600)
-- **Алтын (Gold)**: `#fbbf24` (amber-400)
-- **Градиенттер**: Көк (сол жогору) → Алтын (оң төмөн)
-
-### Жаңы CSS утилиталар
-```css
-.glass              /* Жеңил айнек эффекти */
-.glass-strong       /* Күчтүү айнек эффекти */
-.gradient-blue-gold /* Көк-алтын градиент */
-.animate-float      /* Калкыган анимация */
-.animate-pulse-glow /* Жарык пульсациясы */
-```
-
-## 🛠 Технологиялар
-
-- **Next.js 14** - React framework
-- **TypeScript** - Тип коопсуздугу
-- **Tailwind CSS** - Стилдөө
-- **Framer Motion** - Анимациялар
-- **Firebase** - Маалымат базасы
-- **Lucide React** - Иконкалар
-
-## 🎯 3D Анимациялар
-
-- 5+ калкыган геометриялык фигуралар
-- Үзгүлтүксүз 3D ротациялар
-- 15 анимацияланган жарык бөлүкчөлөрү
-- Жылмакай масштабдоо эффекттери
-- Hardware-accelerated (GPU колдонот)
-
-## 📱 Адаптивдүүлүк
-
-- ✅ Мобилдик (320px+)
-- ✅ Планшет (768px+)
-- ✅ Десктоп (1024px+)
-- ✅ Чоң экрандар (1920px+)
-
-## 🚀 Production орнотуу
-
-### Вариант 1: Vercel (Сунушталат)
-1. GitHub'га код жүктөңүз
-2. Vercel'ге импорттоңуз
-3. Environment variables кошуңуз
-4. Deploy кылыңыз
-
-### Вариант 2: Firebase Hosting
 ```bash
 npm run build
-firebase deploy --only hosting
+npm run deploy:rules   # Firestore rules
+# Vercel же: firebase deploy
 ```
-
-Толук колдонмо үчүн `FIREBASE-SETUP.md` караңыз.
-
-## 🔐 Коопсуздук
-
-- ✅ Firebase коопсуздук эрежелери
-- ✅ Environment variables
-- ✅ Админ аутентификациясы
-- ✅ Public read, admin write
-
-## 📈 Келечектеги өнүктүрүүлөр
-
-- [ ] Email билдирүүлөр
-- [ ] Аналитика (Google Analytics)
-- [ ] SEO оптимизациясы
-- [ ] Көп тилдүүлүк (орусча, англисче)
-- [ ] Төлөм системасы
-- [ ] Студент порталы
-- [ ] Мобилдик тиркеме
-
-## 🎓 Колдонуу
-
-### Администраторлор үчүн
-1. `ADMIN-GUIDE.md` окуңуз
-2. Firebase орнотуңуз (`FIREBASE-SETUP.md`)
-3. Админ панелге кириңиз
-4. Контентти башкарыңыз
-
-### Иштеп чыгуучулар үчүн
-1. `QUICK-START.md` окуңуз
-2. `npm install && npm run dev`
-3. Код менен иштеңиз
-4. `PRODUCTION-IMPROVEMENTS.md` караңыз
-
-## 📊 Өндүрүмдүүлүк
-
-- Lighthouse Score: 90+ (максат)
-- CSS анимациялар GPU-accelerated
-- Lazy loading компоненттер
-- Оптималдаштырылган bundle size
-- Smooth 60 FPS анимациялар
-
-## 👨‍💻 Иштеп чыгуучу
-
-Сеньюр Full-Stack разработчик
-
-## 📄 Лицензия
-
-© 2024 Okurmen Kids. Бардык укуктар корголгон.
-
----
-
-## 🎉 Production Ready!
-
-Сиздин Okurmen Kids сайтыңыз production үчүн даяр:
-- ✅ Сулуу көк-алтын фон
-- ✅ Жылмакай 3D анимациялар
-- ✅ Firebase интеграциясы
-- ✅ Заманбап дизайн
-- ✅ Мобилдик оптимизациясы
-
-Firebase орнотуп, контентти кошуп, deploy кылыңыз! 🚀

@@ -10,6 +10,7 @@ type SectionHeadingProps = {
   subtitle?: string;
   light?: boolean;
   align?: 'center' | 'left';
+  actions?: React.ReactNode;
 };
 
 export default function SectionHeading({
@@ -17,55 +18,52 @@ export default function SectionHeading({
   badgeIcon: BadgeIcon,
   title,
   subtitle,
-  light = false,
-  align = 'center',
+  light = true,
+  align = 'left',
+  actions,
 }: SectionHeadingProps) {
-  const alignClass = align === 'center' ? 'text-center mx-auto' : 'text-left';
+  const centered = align === 'center';
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className={`mb-14 max-w-3xl ${alignClass}`}
+      className={`mb-8 md:mb-12 ${centered ? 'text-center' : ''}`}
     >
-      {badge && (
-        <span
-          className={`section-badge mb-4 inline-flex items-center gap-2 ${
-            light ? '!border-white/25 !bg-white/10 !text-brand-gold-300' : ''
-          }`}
-        >
-          {BadgeIcon && (
-            <BadgeIcon className={`h-4 w-4 shrink-0 ${light ? 'text-brand-gold-400' : 'text-brand-gold-600'}`} />
-          )}
-          {badge}
-        </span>
-      )}
-      <h2
-        className={`text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl ${
-          light ? 'text-white' : 'text-brand-navy-700'
+      <div
+        className={`flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between ${
+          centered ? 'sm:flex-col sm:items-center' : ''
         }`}
       >
-        {title}
-      </h2>
-      {subtitle && (
-        <p
-          className={`mt-4 text-lg leading-relaxed md:text-xl ${
-            light ? 'text-brand-navy-100' : 'text-brand-navy-600'
-          }`}
-        >
-          {subtitle}
-        </p>
-      )}
-      <motion.div
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className={`mt-6 h-1 w-24 rounded-full bg-gradient-to-r from-brand-navy-500 via-brand-gold-500 to-brand-gold-400 shadow-gold-glow ${
-          align === 'center' ? 'mx-auto' : ''
-        }`}
-      />
+        <div className={centered ? 'mx-auto max-w-3xl' : 'max-w-3xl'}>
+          {badge && (
+            <span className={`section-badge mb-2 inline-flex items-center gap-2 md:mb-3 ${!light ? 'section-badge-light' : ''}`}>
+              {BadgeIcon && (
+                <BadgeIcon className={`h-3.5 w-3.5 shrink-0 ${light ? 'text-brand-gold-400' : 'text-brand-gold-600'}`} />
+              )}
+              {badge}
+            </span>
+          )}
+          <h2
+            className={`section-headline ${light ? 'text-white' : 'text-brand-navy-900'} ${
+              centered ? 'mx-auto' : ''
+            }`}
+          >
+            {title}
+          </h2>
+          {subtitle && (
+            <p
+              className={`mt-2 max-w-2xl text-sm leading-relaxed sm:mt-3 sm:text-base md:text-lg ${
+                light ? 'text-slate-400' : 'text-brand-navy-600'
+              } ${centered ? 'mx-auto' : ''}`}
+            >
+              {subtitle}
+            </p>
+          )}
+        </div>
+        {actions && <div className="shrink-0">{actions}</div>}
+      </div>
     </motion.div>
   );
 }

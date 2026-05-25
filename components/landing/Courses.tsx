@@ -1,92 +1,125 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MessageCircle, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
+import { Clock, GraduationCap, BookOpen, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useData } from '@/context/DataContext';
+import { getCourseHighlights } from '@/lib/coursePresentation';
+import EmptyState from '@/components/ui/EmptyState';
 import SectionHeading from './SectionHeading';
 
 const PLACEHOLDER =
-  'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop';
+  'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=500&fit=crop';
 
 export default function Courses() {
-  const { courses, publicDataLoaded } = useData();
-  const whatsappNumber = '+996500677798';
+  const { courses, publicDataLoaded, firebaseConfigured } = useData();
 
-  if (!publicDataLoaded || courses.length === 0) return null;
-
-  const handleWhatsAppClick = (courseName: string) => {
-    const message = `Салам! ${courseName} курс боюнча толук маалымат бере аласызбы?`;
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+  const scrollToEnroll = (courseName?: string) => {
+    const el = document.getElementById('trial-lesson');
+    el?.scrollIntoView({ behavior: 'smooth' });
+    if (courseName) sessionStorage.setItem('okurmen_prefill_course', courseName);
   };
 
   return (
-    <section id="courses" className="section-alt relative py-20 md:py-28">
-      <div className="container mx-auto px-4">
+    <section id="courses" className="section-layer">
+      <div className="site-container">
         <SectionHeading
           badgeIcon={GraduationCap}
           badge="Билим берүү программалары"
           title="Биздин курстар"
-          subtitle="Ар бир курс балдардын жаш өзгөчөлүктөрүнө ылайыкташтырылган"
         />
 
-        <div className="-mx-4 scroll-row px-4 md:-mx-0 md:px-0">
-          {courses.map((course, index) => {
-            const imageUrl = course.image || PLACEHOLDER;
+        {!publicDataLoaded ? (
+          <div className="mx-auto max-w-4xl animate-pulse space-y-8">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-48 rounded-lg bg-white/5" />
+            ))}
+          </div>
+        ) : courses.length === 0 ? (
+          <div className="mx-auto max-w-xl">
+            <EmptyState
+              icon={BookOpen}
+              title="Курстар жакында"
+              description={firebaseConfigured ? 'Жакында жаңы программалар кошулат.' : 'Firebase орнотулганда көрүнөт.'}
+              action={
+                <button type="button" onClick={() => scrollToEnroll()} className="btn-primary">
+                  Жазылуу
+                </button>
+              }
+            />
+          </div>
+        ) : (
+          <div className="mx-auto max-w-5xl divide-y divide-white/[0.08]">
+            {courses.map((course, index) => {
+              const imageUrl = course.image || PLACEHOLDER;
+              const { forWho, learns, outcome, program } = getCourseHighlights(course);
+              const reversed = index % 2 === 1;
 
-            return (
-              <motion.article
-                key={course.id}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-                className="scroll-row-card brand-card-luxury group overflow-hidden"
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={imageUrl}
-                    alt={course.title}
-                    fill
-                    unoptimized={!imageUrl.includes('images.unsplash.com')}
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy-800/80 via-brand-navy-700/30 to-transparent" />
-                  <div className="absolute bottom-3 left-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white/25 backdrop-blur-md">
-                    <BookOpen className="h-5 w-5 text-white drop-shadow" />
+              return (
+                <motion.article
+                  key={course.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  className="grid items-start gap-8 py-12 first:pt-0 last:pb-0 sm:gap-10 sm:py-16 lg:grid-cols-2 lg:gap-14"
+                >
+                  <div className={reversed ? 'lg:order-2' : ''}>
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-lg bg-slate-800">
+                      <Image
+                        src={imageUrl}
+                        alt={course.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        loading="lazy"
+                        unoptimized={!imageUrl.includes('images.unsplash.com')}
+                        className="object-cover"
+                      />
+                      <div className="absolute bottom-3 left-3">
+                        <span className="text-xs font-medium text-white/90">{forWho}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="p-6">
-                  <h3 className="mb-3 text-xl font-bold text-brand-navy-700">{course.title}</h3>
-
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-brand-navy-50 px-3 py-1 text-xs font-semibold text-brand-navy-700">
-                      <Users className="h-3.5 w-3.5 text-brand-gold-500" />
-                      {course.age}
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-brand-gold-50 px-3 py-1 text-xs font-semibold text-brand-gold-800">
-                      <Clock className="h-3.5 w-3.5" />
+                  <div className={reversed ? 'lg:order-1' : ''}>
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
+                      Программа {String(index + 1).padStart(2, '0')}
+                    </p>
+                    <h3 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                      {course.title}
+                    </h3>
+                    <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-400">
+                      <Clock className="h-4 w-4 text-brand-gold-500" />
                       {course.duration}
-                    </span>
+                    </p>
+
+                    <div className="mt-6 space-y-5">
+                      <div>
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Эмне үйрөнөт</p>
+                        <p className="text-sm leading-relaxed text-slate-300">{learns}</p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Жыйынтык</p>
+                        <p className="text-sm leading-relaxed text-slate-300">{outcome}</p>
+                      </div>
+                      <ul className="flex flex-wrap gap-2">
+                        {program.map((item) => (
+                          <li key={item} className="text-xs font-medium text-slate-400">
+                            · {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <button type="button" onClick={() => scrollToEnroll(course.title)} className="btn-primary mt-8">
+                      Курска жазылуу
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
                   </div>
-
-                  <p className="mb-6 line-clamp-3 text-sm leading-relaxed text-brand-navy-600">
-                    {course.description}
-                  </p>
-
-                  <button
-                    onClick={() => handleWhatsAppClick(course.title)}
-                    className="gradient-cta flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-brand-navy-800 transition-all hover:brightness-110"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    Жазылуу
-                  </button>
-                </div>
-              </motion.article>
-            );
-          })}
-        </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

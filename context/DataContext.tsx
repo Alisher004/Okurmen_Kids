@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import type { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -14,350 +14,496 @@ import {
   query,
   orderBy,
   Timestamp,
+  getDoc,
 } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
-import { requireSignedIn, stripUndefined } from '@/lib/firestoreAdmin';
+import { auth, db, isFirebaseConfigured } from '@/lib/firebase';
+import { requireAdminRole, requireStaffRole, stripUndefined } from '@/lib/firestoreAdmin';
+import { isAdminEmail } from '@/lib/adminAuth';
+import { isStaffRole, isAdminRole } from '@/lib/roles';
+import type {
+  Course,
+  Teacher,
+  Student,
+  Lead,
+  LeadStatus,
+  TrialLesson,
+  Banner,
+  FaqItem,
+  VideoReview,
+  TestQuestion,
+  TestResult,
+  UserRole,
+} from '@/lib/types';
 
-export interface Course {
-  id: string;
-  title: string;
-  age: string;
-  description: string;
-  duration: string;
-  icon: string;
-  color: string;
-  image?: string;
-}
-
-export interface Teacher {
-  id: string;
-  name: string;
-  position: string;
-  experience: string;
-  education: string;
-  bio: string;
-  image: string;
-  phone?: string;
-  email?: string;
-}
-
-export interface Student {
-  id: string;
-  name: string;
-  course: string;
-  image: string;
-  achievement?: string;
-  avatar?: string;
-}
-
-export interface Lead {
-  id: string;
-  name: string;
-  phone: string;
-  age: string;
-  course: string;
-  status: 'new' | 'contacted' | 'enrolled';
-  createdAt: Date;
-}
-
-export interface Review {
-  id: string;
-  name: string;
-  review: string;
-  rating: number;
-  createdAt: Date;
-}
+export type {
+  Course,
+  Teacher,
+  Student,
+  Lead,
+  LeadStatus,
+  TrialLesson,
+  Banner,
+  FaqItem,
+  VideoReview,
+  TestQuestion,
+  TestResult,
+  UserRole,
+};
 
 interface DataContextType {
+  firebaseConfigured: boolean;
   authUser: User | null;
   authLoading: boolean;
+  userRole: UserRole | null;
+  isAdmin: boolean;
+  isManager: boolean;
+  isStaff: boolean;
   publicDataLoaded: boolean;
+  firebaseError: string | null;
+
+  banners: Banner[];
+  addBanner: (b: Omit<Banner, 'id'>) => Promise<void>;
+  updateBanner: (id: string, b: Omit<Banner, 'id'>) => Promise<void>;
+  deleteBanner: (id: string) => Promise<void>;
+
+  faqItems: FaqItem[];
+  addFaq: (f: Omit<FaqItem, 'id'>) => Promise<void>;
+  updateFaq: (id: string, f: Omit<FaqItem, 'id'>) => Promise<void>;
+  deleteFaq: (id: string) => Promise<void>;
+
+  testQuestions: TestQuestion[];
+  addTestQuestion: (q: Omit<TestQuestion, 'id'>) => Promise<void>;
+  updateTestQuestion: (id: string, q: Omit<TestQuestion, 'id'>) => Promise<void>;
+  deleteTestQuestion: (id: string) => Promise<void>;
+
+  videoReviews: VideoReview[];
+  addVideoReview: (v: Omit<VideoReview, 'id'>) => Promise<void>;
+  updateVideoReview: (id: string, v: Omit<VideoReview, 'id'>) => Promise<void>;
+  deleteVideoReview: (id: string) => Promise<void>;
 
   courses: Course[];
   addCourse: (course: Omit<Course, 'id'>) => Promise<void>;
   updateCourse: (id: string, course: Omit<Course, 'id'>) => Promise<void>;
   deleteCourse: (id: string) => Promise<void>;
-  
+
   teachers: Teacher[];
   addTeacher: (teacher: Omit<Teacher, 'id'>) => Promise<void>;
   updateTeacher: (id: string, teacher: Omit<Teacher, 'id'>) => Promise<void>;
   deleteTeacher: (id: string) => Promise<void>;
-  
+
   students: Student[];
   addStudent: (student: Omit<Student, 'id'>) => Promise<void>;
   updateStudent: (id: string, student: Omit<Student, 'id'>) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
-  
+
   leads: Lead[];
   addLead: (lead: Omit<Lead, 'id' | 'status' | 'createdAt'>) => Promise<void>;
-  updateLeadStatus: (id: string, status: Lead['status']) => Promise<void>;
+  updateLead: (id: string, data: Partial<Pick<Lead, 'status' | 'notes'>>) => Promise<void>;
   deleteLead: (id: string) => Promise<void>;
 
-  reviews: Review[];
-  addReview: (review: Omit<Review, 'id' | 'createdAt'>) => Promise<string | null>;
-  deleteReview: (id: string) => Promise<void>;
+  trialLessons: TrialLesson[];
+  addTrialLesson: (t: Omit<TrialLesson, 'id' | 'status' | 'createdAt'>) => Promise<void>;
+  updateTrialLesson: (id: string, data: Partial<Pick<TrialLesson, 'status' | 'notes'>>) => Promise<void>;
+  deleteTrialLesson: (id: string) => Promise<void>;
+
+  testResults: TestResult[];
+  addTestResult: (result: Omit<TestResult, 'id' | 'createdAt'>) => Promise<void>;
+  deleteTestResult: (id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 function requireDb(): NonNullable<typeof db> {
-  if (!db) {
-    throw new Error('Firebase Firestore конфигурациясы табылган жок.');
-  }
+  if (!db) throw new Error('Firebase Firestore конфигурациясы табылган жок.');
   return db;
 }
 
+function mapTimestamp(data: Record<string, unknown>, field = 'createdAt'): Date {
+  const value = data[field];
+  if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
+    return value.toDate();
+  }
+  return new Date();
+}
+
+function sortByOrder<T extends { order?: number }>(items: T[]): T[] {
+  return [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
 export function DataProvider({ children }: { children: ReactNode }) {
+  const firebaseConfigured = isFirebaseConfigured();
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
+  const [testQuestions, setTestQuestions] = useState<TestQuestion[]>([]);
+  const [videoReviews, setVideoReviews] = useState<VideoReview[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [trialLessons, setTrialLessons] = useState<TrialLesson[]>([]);
+  const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [authUser, setAuthUser] = useState<User | null>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [authLoading, setAuthLoading] = useState(firebaseConfigured);
+  const [publicDataLoaded, setPublicDataLoaded] = useState(!firebaseConfigured);
+  const [firebaseError, setFirebaseError] = useState<string | null>(null);
+
   const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith('/admin') ?? false;
-  const [authLoading, setAuthLoading] = useState(false);
-  const [publicDataLoaded, setPublicDataLoaded] = useState(true);
+  const isProtectedRoute =
+    pathname?.startsWith('/admin') || pathname?.startsWith('/manager') || false;
+
+  const isAdmin = useMemo(
+    () => isAdminRole(userRole) || isAdminEmail(authUser?.email),
+    [userRole, authUser?.email]
+  );
+  const isManager = useMemo(() => userRole === 'manager', [userRole]);
+  const isStaff = useMemo(() => isStaffRole(userRole) || isAdmin, [userRole, isAdmin]);
+
+  const markLoaded = useCallback(() => setPublicDataLoaded(true), []);
 
   useEffect(() => {
-    if (!db) return;
+    if (!db) {
+      markLoaded();
+      return;
+    }
     const firestore = db;
-
-    const readyTimeout = window.setTimeout(() => setPublicDataLoaded(true), 1500);
-
-    const unsubscribeCourses = onSnapshot(collection(firestore, 'courses'), (snapshot) => {
-      setCourses(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Course[]);
-      setPublicDataLoaded(true);
-    }, (error) => {
-      console.error('Failed to subscribe to courses:', error);
-      setPublicDataLoaded(true);
-    });
-
-    const unsubscribeTeachers = onSnapshot(collection(firestore, 'teachers'), (snapshot) => {
-      setTeachers(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Teacher[]);
-      setPublicDataLoaded(true);
-    }, (error) => {
-      console.error('Failed to subscribe to teachers:', error);
-      setPublicDataLoaded(true);
-    });
-
-    const unsubscribeStudents = onSnapshot(collection(firestore, 'students'), (snapshot) => {
-      setStudents(snapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          image: data.image || data.avatar || '',
-        };
-      }) as Student[]);
-      setPublicDataLoaded(true);
-    }, (error) => {
-      console.error('Failed to subscribe to students:', error);
-      setPublicDataLoaded(true);
-    });
-
-    const mapReviews = (snapshot: { docs: { id: string; data: () => Record<string, unknown> }[] }) => {
-      const items = snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
-        return {
-          id: docSnap.id,
-          ...data,
-          createdAt: (data.createdAt as { toDate?: () => Date } | undefined)?.toDate?.() || new Date(),
-        };
-      }) as Review[];
-      items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      setReviews(items);
+    const readyTimeout = window.setTimeout(markLoaded, 2500);
+    const onErr = (label: string) => (error: Error) => {
+      console.error(`Firestore ${label}:`, error);
+      setFirebaseError(error.message);
+      markLoaded();
     };
 
-    let unsubscribeReviews = () => {};
-    const reviewsQuery = query(collection(firestore, 'reviews'), orderBy('createdAt', 'desc'));
-    unsubscribeReviews = onSnapshot(reviewsQuery, mapReviews, (error) => {
-      console.error('Failed to subscribe to reviews (ordered):', error);
-      unsubscribeReviews();
-      unsubscribeReviews = onSnapshot(collection(firestore, 'reviews'), mapReviews, (fallbackError) => {
-        console.error('Failed to subscribe to reviews:', fallbackError);
-      });
-    });
+    const mapOrdered = <T extends { id: string; order?: number }>(
+      snapshot: { docs: { id: string; data: () => Record<string, unknown> }[] },
+      setter: (items: T[]) => void
+    ) => {
+      const items = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as T);
+      setter(sortByOrder(items));
+      markLoaded();
+    };
+
+    const unsubs = [
+      onSnapshot(collection(firestore, 'banners'), (s) => mapOrdered<Banner>(s, setBanners), onErr('banners')),
+      onSnapshot(collection(firestore, 'faq'), (s) => mapOrdered<FaqItem>(s, setFaqItems), onErr('faq')),
+      onSnapshot(collection(firestore, 'testQuestions'), (s) => mapOrdered<TestQuestion>(s, setTestQuestions), onErr('testQuestions')),
+      onSnapshot(collection(firestore, 'videoReviews'), (s) => mapOrdered<VideoReview>(s, setVideoReviews), onErr('videoReviews')),
+      onSnapshot(collection(firestore, 'courses'), (s) => {
+        setCourses(s.docs.map((d) => ({ id: d.id, ...d.data() })) as Course[]);
+        markLoaded();
+      }, onErr('courses')),
+      onSnapshot(collection(firestore, 'teachers'), (s) => mapOrdered<Teacher>(s, setTeachers), onErr('teachers')),
+      onSnapshot(collection(firestore, 'students'), (s) => {
+        setStudents(
+          s.docs.map((d) => {
+            const data = d.data();
+            return { id: d.id, ...data, image: (data.image as string) || (data.avatar as string) || '' };
+          }) as Student[]
+        );
+        markLoaded();
+      }, onErr('students')),
+    ];
 
     return () => {
       window.clearTimeout(readyTimeout);
-      unsubscribeCourses();
-      unsubscribeTeachers();
-      unsubscribeStudents();
-      unsubscribeReviews();
+      unsubs.forEach((u) => u());
     };
-  }, []);
+  }, [markLoaded]);
 
   useEffect(() => {
     if (!auth) {
       setAuthUser(null);
+      setUserRole(null);
       setAuthLoading(false);
       return;
     }
-
-    if (!isAdminRoute) {
-      setAuthLoading(false);
-      const unsubscribe = onAuthStateChanged(auth, setAuthUser);
-      return () => unsubscribe();
-    }
-
-    setAuthLoading(true);
-    const authReadyTimeout = window.setTimeout(() => setAuthLoading(false), 2000);
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      window.clearTimeout(authReadyTimeout);
+    setAuthLoading(isProtectedRoute);
+    const unsub = onAuthStateChanged(auth, async (user) => {
       setAuthUser(user);
+      if (!user || !db) {
+        setUserRole(null);
+        setAuthLoading(false);
+        return;
+      }
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists()) {
+          const role = snap.data().role as UserRole;
+          setUserRole(role === 'admin' || role === 'manager' ? role : null);
+        } else if (isAdminEmail(user.email)) {
+          setUserRole('admin');
+        } else {
+          setUserRole(null);
+        }
+      } catch {
+        setUserRole(isAdminEmail(user.email) ? 'admin' : null);
+      }
       setAuthLoading(false);
     });
-
-    return () => {
-      window.clearTimeout(authReadyTimeout);
-      unsubscribe();
-    };
-  }, [isAdminRoute]);
+    return () => unsub();
+  }, [isProtectedRoute]);
 
   useEffect(() => {
-    if (!db || !authUser) {
+    if (!db || !authUser || !isStaff) {
       setLeads([]);
+      setTrialLessons([]);
+      setTestResults([]);
       return;
     }
-
     const firestore = db;
 
     const mapLeads = (snapshot: { docs: { id: string; data: () => Record<string, unknown> }[] }) => {
-      const items = snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
-        return {
-          id: docSnap.id,
-          ...data,
-          createdAt: (data.createdAt as { toDate?: () => Date } | undefined)?.toDate?.() || new Date(),
-        };
-      }) as Lead[];
+      const items = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: mapTimestamp(d.data()),
+      })) as Lead[];
       items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       setLeads(items);
     };
 
-    let unsubscribeLeads = () => {};
-    const leadsQuery = query(collection(firestore, 'leads'), orderBy('createdAt', 'desc'));
-    unsubscribeLeads = onSnapshot(leadsQuery, mapLeads, (error) => {
-      console.error('Failed to subscribe to leads (ordered):', error);
-      unsubscribeLeads();
-      unsubscribeLeads = onSnapshot(collection(firestore, 'leads'), mapLeads, (fallbackError) => {
-        console.error('Failed to subscribe to leads:', fallbackError);
-      });
+    const mapTrials = (snapshot: { docs: { id: string; data: () => Record<string, unknown> }[] }) => {
+      const items = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: mapTimestamp(d.data()),
+      })) as TrialLesson[];
+      items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setTrialLessons(items);
+    };
+
+    const mapTests = (snapshot: { docs: { id: string; data: () => Record<string, unknown> }[] }) => {
+      const items = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: mapTimestamp(d.data()),
+      })) as TestResult[];
+      items.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setTestResults(items);
+    };
+
+    let u1 = onSnapshot(query(collection(firestore, 'leads'), orderBy('createdAt', 'desc')), mapLeads, () => {
+      u1 = onSnapshot(collection(firestore, 'leads'), mapLeads);
+    });
+    let u2 = onSnapshot(query(collection(firestore, 'trialLessons'), orderBy('createdAt', 'desc')), mapTrials, () => {
+      u2 = onSnapshot(collection(firestore, 'trialLessons'), mapTrials);
+    });
+    let u3 = onSnapshot(query(collection(firestore, 'testResults'), orderBy('createdAt', 'desc')), mapTests, () => {
+      u3 = onSnapshot(collection(firestore, 'testResults'), mapTests);
     });
 
-    return () => unsubscribeLeads();
-  }, [authUser]);
+    return () => {
+      u1();
+      u2();
+      u3();
+    };
+  }, [authUser, isStaff]);
 
-  // Course CRUD (admin only)
+  const adminGuard = () => requireAdminRole(isAdmin);
+  const staffGuard = () => requireStaffRole(isStaff);
+
+  const addBanner = async (b: Omit<Banner, 'id'>) => {
+    adminGuard();
+    await addDoc(collection(requireDb(), 'banners'), stripUndefined(b));
+  };
+  const updateBanner = async (id: string, b: Omit<Banner, 'id'>) => {
+    adminGuard();
+    await updateDoc(doc(requireDb(), 'banners', id), stripUndefined(b));
+  };
+  const deleteBanner = async (id: string) => {
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'banners', id));
+  };
+
+  const addFaq = async (f: Omit<FaqItem, 'id'>) => {
+    adminGuard();
+    await addDoc(collection(requireDb(), 'faq'), stripUndefined(f));
+  };
+  const updateFaq = async (id: string, f: Omit<FaqItem, 'id'>) => {
+    adminGuard();
+    await updateDoc(doc(requireDb(), 'faq', id), stripUndefined(f));
+  };
+  const deleteFaq = async (id: string) => {
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'faq', id));
+  };
+
+  const addTestQuestion = async (q: Omit<TestQuestion, 'id'>) => {
+    adminGuard();
+    await addDoc(collection(requireDb(), 'testQuestions'), stripUndefined(q));
+  };
+  const updateTestQuestion = async (id: string, q: Omit<TestQuestion, 'id'>) => {
+    adminGuard();
+    await updateDoc(doc(requireDb(), 'testQuestions', id), stripUndefined(q));
+  };
+  const deleteTestQuestion = async (id: string) => {
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'testQuestions', id));
+  };
+
+  const addVideoReview = async (v: Omit<VideoReview, 'id'>) => {
+    adminGuard();
+    await addDoc(collection(requireDb(), 'videoReviews'), stripUndefined(v));
+  };
+  const updateVideoReview = async (id: string, v: Omit<VideoReview, 'id'>) => {
+    adminGuard();
+    await updateDoc(doc(requireDb(), 'videoReviews', id), stripUndefined(v));
+  };
+  const deleteVideoReview = async (id: string) => {
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'videoReviews', id));
+  };
+
   const addCourse = async (course: Omit<Course, 'id'>) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await addDoc(collection(firestore, 'courses'), stripUndefined(course));
+    adminGuard();
+    await addDoc(collection(requireDb(), 'courses'), stripUndefined(course));
   };
-
   const updateCourse = async (id: string, course: Omit<Course, 'id'>) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await updateDoc(doc(firestore, 'courses', id), stripUndefined(course));
+    adminGuard();
+    await updateDoc(doc(requireDb(), 'courses', id), stripUndefined(course));
   };
-
   const deleteCourse = async (id: string) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await deleteDoc(doc(firestore, 'courses', id));
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'courses', id));
   };
 
-  // Teacher CRUD (admin only)
   const addTeacher = async (teacher: Omit<Teacher, 'id'>) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await addDoc(collection(firestore, 'teachers'), stripUndefined(teacher));
+    adminGuard();
+    await addDoc(collection(requireDb(), 'teachers'), stripUndefined(teacher));
   };
-
   const updateTeacher = async (id: string, teacher: Omit<Teacher, 'id'>) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await updateDoc(doc(firestore, 'teachers', id), stripUndefined(teacher));
+    adminGuard();
+    await updateDoc(doc(requireDb(), 'teachers', id), stripUndefined(teacher));
   };
-
   const deleteTeacher = async (id: string) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await deleteDoc(doc(firestore, 'teachers', id));
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'teachers', id));
   };
 
-  // Student CRUD (admin only)
   const addStudent = async (student: Omit<Student, 'id'>) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await addDoc(collection(firestore, 'students'), stripUndefined(student));
+    adminGuard();
+    await addDoc(collection(requireDb(), 'students'), stripUndefined(student));
   };
-
   const updateStudent = async (id: string, student: Omit<Student, 'id'>) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await updateDoc(doc(firestore, 'students', id), stripUndefined(student));
+    adminGuard();
+    await updateDoc(doc(requireDb(), 'students', id), stripUndefined(student));
   };
-
   const deleteStudent = async (id: string) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await deleteDoc(doc(firestore, 'students', id));
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'students', id));
   };
 
-  // Lead: public create, admin read/update/delete
   const addLead = async (lead: Omit<Lead, 'id' | 'status' | 'createdAt'>) => {
-    const firestore = requireDb();
-    const payload = stripUndefined({
+    await addDoc(collection(requireDb(), 'leads'), {
       name: lead.name.trim(),
       phone: lead.phone.trim(),
       age: lead.age.trim(),
       course: lead.course.trim(),
-      status: 'new' as const,
+      comment: lead.comment?.trim() || '',
+      notes: '',
+      status: 'new' as LeadStatus,
       createdAt: Timestamp.now(),
     });
-    await addDoc(collection(firestore, 'leads'), payload);
   };
-
-  const updateLeadStatus = async (id: string, status: Lead['status']) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await updateDoc(doc(firestore, 'leads', id), { status });
+  const updateLead = async (id: string, data: Partial<Pick<Lead, 'status' | 'notes'>>) => {
+    staffGuard();
+    await updateDoc(doc(requireDb(), 'leads', id), stripUndefined(data as Record<string, unknown>));
   };
-
   const deleteLead = async (id: string) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await deleteDoc(doc(firestore, 'leads', id));
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'leads', id));
   };
 
-  // Review: public create, admin delete
-  const addReview = async (review: Omit<Review, 'id' | 'createdAt'>) => {
-    const firestore = requireDb();
-    const ref = await addDoc(collection(firestore, 'reviews'), {
-      ...review,
+  const addTrialLesson = async (t: Omit<TrialLesson, 'id' | 'status' | 'createdAt'>) => {
+    await addDoc(collection(requireDb(), 'trialLessons'), {
+      childName: t.childName.trim(),
+      parentPhone: t.parentPhone.trim(),
+      childAge: t.childAge.trim(),
+      courseInterest: t.courseInterest.trim(),
+      comment: t.comment?.trim() || '',
+      notes: '',
+      status: 'new',
       createdAt: Timestamp.now(),
     });
-    return ref.id;
+  };
+  const updateTrialLesson = async (id: string, data: Partial<Pick<TrialLesson, 'status' | 'notes'>>) => {
+    staffGuard();
+    await updateDoc(doc(requireDb(), 'trialLessons', id), stripUndefined(data as Record<string, unknown>));
+  };
+  const deleteTrialLesson = async (id: string) => {
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'trialLessons', id));
   };
 
-  const deleteReview = async (id: string) => {
-    requireSignedIn();
-    const firestore = requireDb();
-    await deleteDoc(doc(firestore, 'reviews', id));
+  const addTestResult = async (result: Omit<TestResult, 'id' | 'createdAt'>) => {
+    await addDoc(collection(requireDb(), 'testResults'), {
+      name: result.name.trim(),
+      phone: result.phone?.trim() || '',
+      age: result.age?.trim() || '',
+      score: result.score,
+      totalQuestions: result.totalQuestions,
+      percentage: result.percentage,
+      createdAt: Timestamp.now(),
+    });
+  };
+  const deleteTestResult = async (id: string) => {
+    adminGuard();
+    await deleteDoc(doc(requireDb(), 'testResults', id));
   };
 
   return (
-    <DataContext.Provider value={{
-      authUser, authLoading, publicDataLoaded,
-      courses, addCourse, updateCourse, deleteCourse,
-      teachers, addTeacher, updateTeacher, deleteTeacher,
-      students, addStudent, updateStudent, deleteStudent,
-      leads, addLead, updateLeadStatus, deleteLead,
-      reviews, addReview, deleteReview,
-    }}>
+    <DataContext.Provider
+      value={{
+        firebaseConfigured,
+        authUser,
+        authLoading,
+        userRole,
+        isAdmin,
+        isManager,
+        isStaff,
+        publicDataLoaded,
+        firebaseError,
+        banners,
+        addBanner,
+        updateBanner,
+        deleteBanner,
+        faqItems,
+        addFaq,
+        updateFaq,
+        deleteFaq,
+        testQuestions,
+        addTestQuestion,
+        updateTestQuestion,
+        deleteTestQuestion,
+        videoReviews,
+        addVideoReview,
+        updateVideoReview,
+        deleteVideoReview,
+        courses,
+        addCourse,
+        updateCourse,
+        deleteCourse,
+        teachers,
+        addTeacher,
+        updateTeacher,
+        deleteTeacher,
+        students,
+        addStudent,
+        updateStudent,
+        deleteStudent,
+        leads,
+        addLead,
+        updateLead,
+        deleteLead,
+        trialLessons,
+        addTrialLesson,
+        updateTrialLesson,
+        deleteTrialLesson,
+        testResults,
+        addTestResult,
+        deleteTestResult,
+      }}
+    >
       {children}
     </DataContext.Provider>
   );

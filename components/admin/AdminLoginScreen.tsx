@@ -10,6 +10,8 @@ type AdminLoginScreenProps = {
   onEmailChange: (v: string) => void;
   onPasswordChange: (v: string) => void;
   onLogin: (e: React.FormEvent) => void;
+  title?: string;
+  subtitle?: string;
 };
 
 export default function AdminLoginScreen({
@@ -20,6 +22,8 @@ export default function AdminLoginScreen({
   onEmailChange,
   onPasswordChange,
   onLogin,
+  title = 'Admin Panel',
+  subtitle = 'Окурмен Кидс башкаруу панели',
 }: AdminLoginScreenProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#171827] p-4 text-white">
@@ -32,8 +36,12 @@ export default function AdminLoginScreen({
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 shadow-lg shadow-sky-500/25">
             <span className="text-2xl font-bold text-white">OK</span>
           </div>
-          <h1 className="mb-2 text-3xl font-bold">Admin Panel</h1>
-          <p className="text-slate-400">Окурмен Кидс башкаруу панели</p>
+          <h1 className="mb-2 text-3xl font-bold">{title}</h1>
+          <p className="text-slate-400">{subtitle}</p>
+          <p className="mt-3 text-xs text-slate-500">
+            Firebase Authentication каттоосу менен кириңиз. Админ уруксаты Firestore admins коллекциясында
+            орнотулушу керек.
+          </p>
         </div>
 
         <form onSubmit={onLogin} className="space-y-4">

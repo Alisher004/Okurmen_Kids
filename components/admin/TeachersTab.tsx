@@ -5,6 +5,7 @@ import { Plus, Trash2, Edit2, X, User, GraduationCap, Briefcase, FileText } from
 import { useData } from '@/context/DataContext';
 import type { Teacher } from '@/context/DataContext';
 import ImageUrlField from './ImageUrlField';
+import OrderControls from '@/components/ui/OrderControls';
 import { getFirestoreErrorMessage } from '@/lib/firestoreAdmin';
 
 export default function TeachersTab() {
@@ -18,6 +19,7 @@ export default function TeachersTab() {
     education: '',
     bio: '',
     image: '',
+    order: 0,
   });
   const [saveError, setSaveError] = useState('');
 
@@ -44,6 +46,7 @@ export default function TeachersTab() {
       education: '',
       bio: '',
       image: '',
+      order: 0,
     });
     setSaveError('');
     setEditingTeacher(null);
@@ -59,6 +62,7 @@ export default function TeachersTab() {
       education: teacher.education,
       bio: teacher.bio,
       image: teacher.image,
+      order: teacher.order ?? 0,
     });
     setShowModal(true);
   };
@@ -223,6 +227,11 @@ export default function TeachersTab() {
                 onChange={(image) => setFormData({ ...formData, image })}
                 placeholder="https://example.com/teacher.jpg"
                 required
+              />
+
+              <OrderControls
+                order={formData.order}
+                onOrderChange={(order) => setFormData({ ...formData, order })}
               />
 
               {saveError && (

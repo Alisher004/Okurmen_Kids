@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Menu, X, MessageCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Menu, X, Send, Phone } from 'lucide-react';
 import LogoMark from './LogoMark';
 import { useData } from '@/context/DataContext';
+import { useEnrollModal } from '@/context/EnrollModalContext';
 
 export default function Navbar() {
-  const { courses, teachers, students, publicDataLoaded } = useData();
+  const { courses, publicDataLoaded } = useData();
+  const { openEnroll } = useEnrollModal();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  const whatsappNumber = '+996500677798';
-  const whatsappMessage = 'Салам! Окурмен Kids курстары жөнүндө маалымат алгым келет.';
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -19,25 +19,31 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleWhatsAppClick = () => {
-    const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-    window.open(url, '_blank');
-  };
-
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setIsOpen(false);
   };
 
   const navLink =
-    'relative text-sm font-medium text-white/90 transition-colors hover:text-brand-gold-300 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-brand-gold-400 after:transition-all hover:after:w-full';
+    'relative text-sm font-medium text-white/90 transition-colors hover:text-brand-gold-300';
 
   const navItems = [
-    publicDataLoaded && courses.length > 0 && { id: 'courses', label: 'Курстар' },
-    publicDataLoaded && teachers.length > 0 && { id: 'teachers', label: 'Мугалимдер' },
-    publicDataLoaded && students.length > 0 && { id: 'students', label: 'Студенттер' },
-    { id: 'contact', label: 'Байланыш' },
-  ].filter(Boolean) as { id: string; label: string }[];
+    { id: 'why-us', label: 'Биз жөнүндө', type: 'scroll' as const },
+    publicDataLoaded && courses.length > 0 && { id: 'courses', label: 'Курстар', type: 'scroll' as const },
+    { href: '#teachers', label: 'Мугалимдер', type: 'link' as const },
+    { id: 'faq', label: 'FAQ', type: 'scroll' as const },
+  ].filter(Boolean) as Array<
+    | { id: string; label: string; type: 'scroll' }
+    | { href: string; label: string; type: 'link' }
+  >;
+
+  const handleNav = (item: (typeof navItems)[number]) => {
+    if (item.type === 'link') {
+      setIsOpen(false);
+      return;
+    }
+    scrollToSection(item.id);
+  };
 
   return (
     <nav
@@ -45,27 +51,38 @@ export default function Navbar() {
         scrolled ? 'shadow-luxury backdrop-blur-xl' : 'backdrop-blur-md'
       }`}
     >
-      <div className="container mx-auto px-4">
+      <div className="site-container max-w-7xl">
         <div className="flex h-16 items-center justify-between md:h-[4.5rem]">
-          <button onClick={() => scrollToSection('hero')} className="shrink-0">
+          <button type="button" onClick={() => scrollToSection('hero')} className="shrink-0">
             <LogoMark size="lg" variant="light" showText={true} />
           </button>
 
-          <div className="hidden items-center gap-8 md:flex">
-            {navItems.map((item) => (
-              <button key={item.id} onClick={() => scrollToSection(item.id)} className={navLink}>
-                {item.label}
-              </button>
-            ))}
-            <button onClick={handleWhatsAppClick} className="btn-primary !py-2.5 !text-sm">
-              <MessageCircle className="h-4 w-4" />
+          <div className="hidden items-center gap-5 xl:flex">
+            {navItems.map((item) =>
+              item.type === 'link' ? (
+                <Link key={item.href} href={item.href} className={navLink}>
+                  {item.label}
+                </Link>
+              ) : (
+                <button key={item.id} type="button" onClick={() => handleNav(item)} className={navLink}>
+                  {item.label}
+                </button>
+              )
+            )}
+            <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary !py-2.5 !text-sm">
+              <Phone className="h-4 w-4" />
+              Байланыш
+            </button>
+            <button type="button" onClick={openEnroll} className="btn-primary !py-2.5 !text-sm">
+              <Send className="h-4 w-4" />
               Жазылуу
             </button>
           </div>
 
           <button
+            type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="rounded-xl p-2 text-white transition-colors hover:bg-white/10 md:hidden"
+            className="rounded-xl p-2 text-white hover:bg-white/10 xl:hidden"
             aria-label="Меню"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -73,19 +90,42 @@ export default function Navbar() {
         </div>
 
         {isOpen && (
-          <div className="space-y-1 border-t border-white/10 py-4 md:hidden">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="block w-full rounded-xl px-4 py-3 text-left font-medium text-white/90 hover:bg-white/10"
-              >
-                {item.label}
-              </button>
-            ))}
-            <button onClick={handleWhatsAppClick} className="btn-primary mt-2 w-full">
-              <MessageCircle className="h-4 w-4" />
-              WhatsApp жазылуу
+          <div className="space-y-1 border-t border-white/10 py-4 xl:hidden">
+            {navItems.map((item) =>
+              item.type === 'link' ? (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full rounded-xl px-4 py-3 text-left font-medium text-white/90 hover:bg-white/10"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleNav(item)}
+                  className="block w-full rounded-xl px-4 py-3 text-left font-medium text-white/90 hover:bg-white/10"
+                >
+                  {item.label}
+                </button>
+              )
+            )}
+            <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary mt-2 w-full">
+              <Phone className="h-4 w-4" />
+              Байланыш
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+                openEnroll();
+              }}
+              className="btn-primary mt-2 w-full"
+            >
+              <Send className="h-4 w-4" />
+              Жазылуу
             </button>
           </div>
         )}

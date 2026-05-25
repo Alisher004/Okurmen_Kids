@@ -1,9 +1,16 @@
 'use client';
 
+import Link from 'next/link';
 import { Instagram, Youtube, Mail, MapPin } from 'lucide-react';
+import { useData } from '@/context/DataContext';
 import LogoMark from './LogoMark';
 
+const FALLBACK_COURSES = ['Frontend Development', 'Scratch Programming', 'Python Basics', 'Web Design'];
+
 export default function Footer() {
+  const { courses } = useData();
+  const courseTitles = courses.length > 0 ? courses.map((c) => c.title) : FALLBACK_COURSES;
+
   return (
     <footer className="footer-luxury relative text-white">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-brand-gold-500 to-transparent opacity-80" />
@@ -20,7 +27,7 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-brand-gold-400">Курстар</h3>
             <ul className="space-y-2.5 text-brand-navy-200">
-              {['Frontend Development', 'Scratch Programming', 'Python Basics', 'Web Design'].map((c) => (
+              {courseTitles.map((c) => (
                 <li key={c}>
                   <a href="#courses" className="transition-colors hover:text-brand-gold-300">
                     {c}
@@ -34,12 +41,12 @@ export default function Footer() {
             <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-brand-gold-400">Байланыш</h3>
             <ul className="space-y-3 text-brand-navy-200">
               <li>
-                <a href="tel:+996500677798" className="hover:text-white transition-colors">
+                <a href="tel:+996500677798" className="transition-colors hover:text-white">
                   +996 500 677 798
                 </a>
               </li>
               <li>
-                <a href="mailto:okurmen2022@gmail.com" className="hover:text-white transition-colors">
+                <a href="mailto:okurmen2022@gmail.com" className="transition-colors hover:text-white">
                   okurmen2022@gmail.com
                 </a>
               </li>
@@ -93,8 +100,16 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-brand-navy-800 pt-8 text-center text-sm text-brand-navy-400">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-brand-navy-800 pt-8 text-sm text-brand-navy-400 sm:flex-row">
           <p>&copy; {new Date().getFullYear()} Okurmen Kids. Бардык укуктар корголгон.</p>
+          <div className="flex gap-4">
+            <Link href="/privacy" className="hover:text-brand-gold-300">
+              Купуялык саясаты
+            </Link>
+            <Link href="/terms" className="hover:text-brand-gold-300">
+              Колдонуу шарттары
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

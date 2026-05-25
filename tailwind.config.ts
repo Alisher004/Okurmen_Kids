@@ -37,6 +37,8 @@ const config: Config = {
             800: "#B38200",
             900: "#997000",
           },
+          surface: "#F7F9FC",
+          "surface-muted": "#EEF4FC",
           orange: {
             50: "#FFFBF0",
             100: "#FFF4D6",
