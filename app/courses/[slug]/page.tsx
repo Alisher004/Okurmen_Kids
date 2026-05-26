@@ -33,5 +33,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default function CoursePage({ params }: PageProps) {
-  return <CourseDetailPage slug={params.slug} />;
+  let slug = params.slug;
+  try {
+    slug = decodeURIComponent(params.slug);
+  } catch {
+    /* use raw */
+  }
+  return <CourseDetailPage slug={slug} />;
 }

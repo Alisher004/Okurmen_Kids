@@ -34,22 +34,19 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} — Балдар үчүн IT курстар`,
     description: SITE_DESCRIPTION,
-    images: [{ url: '/icon.svg', width: 512, height: 512, alt: SITE_NAME }],
+    images: [{ url: '/logo.svg', width: 512, height: 512, alt: SITE_NAME }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE_NAME} — Балдар үчүн IT курстар`,
     description: SITE_DESCRIPTION,
-    images: ['/icon.svg'],
+    images: ['/logo.svg'],
   },
   robots: { index: true, follow: true },
   icons: {
-    icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/logo.svg', type: 'image/svg+xml', sizes: 'any' },
-    ],
-    shortcut: '/icon.svg',
-    apple: [{ url: '/apple-icon.svg', type: 'image/svg+xml', sizes: '180x180' }],
+    icon: [{ url: '/logo.svg', type: 'image/svg+xml', sizes: 'any' }],
+    shortcut: '/logo.svg',
+    apple: [{ url: '/logo.svg', type: 'image/svg+xml' }],
   },
 };
 

@@ -57,7 +57,16 @@ export default function VideoReviewsTab() {
             <div className="space-y-3">
               <input className="w-full rounded-xl border px-4 py-2" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
               <input className="w-full rounded-xl border px-4 py-2" placeholder="Student name" value={form.studentName} onChange={(e) => setForm({ ...form, studentName: e.target.value })} required />
-              <input className="w-full rounded-xl border px-4 py-2" placeholder="YouTube URL" value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} required />
+              <input
+                className="w-full rounded-xl border px-4 py-2"
+                placeholder="Видео шилтеме (YouTube, Vimeo, mp4, Google Drive...)"
+                value={form.videoUrl}
+                onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+                required
+              />
+              <p className="text-xs text-gray-500">
+                YouTube (Shorts кошумча), Vimeo, Rutube, түз mp4/webm шилтеме же башка embed URL.
+              </p>
               <ImageUrlField value={form.thumbnail || ''} onChange={(thumbnail) => setForm({ ...form, thumbnail })} placeholder="Thumbnail URL (optional)" />
               <OrderControls order={form.order} onOrderChange={(order) => setForm({ ...form, order })} />
               <label className="flex gap-2"><input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} /> Активдүү</label>

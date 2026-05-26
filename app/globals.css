@@ -108,6 +108,31 @@
     @apply w-[min(72vw,240px)] sm:w-[260px];
   }
 
+  /** Vertical Shorts / Reels-style review cards */
+  .scroll-row-card-shorts {
+    @apply w-[min(58vw,200px)] sm:w-[220px] md:w-[240px];
+  }
+
+  .shorts-frame {
+    @apply relative aspect-[9/16] overflow-hidden rounded-2xl border border-white/[0.1] bg-black shadow-luxury;
+  }
+
+  .shorts-frame iframe,
+  .shorts-frame video {
+    @apply absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2;
+  }
+
+  /* YouTube embed is 16:9 — scale to fill vertical frame for Shorts */
+  .shorts-frame--vertical iframe {
+    width: 315%;
+    max-width: none;
+    height: 100%;
+  }
+
+  .landscape-frame {
+    @apply relative aspect-video overflow-hidden rounded-xl border border-white/[0.08] bg-black/50;
+  }
+
   .brand-card {
     @apply relative overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.04] transition-colors duration-200;
   }

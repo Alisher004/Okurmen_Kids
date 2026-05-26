@@ -3,9 +3,10 @@
 import { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Loader2, Play, Video, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Loader2, Play, Video, X } from 'lucide-react';
 import { useData } from '@/context/DataContext';
-import { getYouTubeEmbedUrl, getYouTubeThumbnail } from '@/lib/youtube';
+import { resolveVideoUrl } from '@/lib/videoEmbed';
+import { isYouTubeShortUrl } from '@/lib/youtube';
 import EmptyState from '@/components/ui/EmptyState';
 import SectionHeading from './SectionHeading';
 
@@ -14,6 +15,10 @@ type VideoTestimonialsProps = {
   title?: string;
   subtitle?: string;
 };
+
+function isVerticalVideoUrl(url: string): boolean {
+  return isYouTubeShortUrl(url);
+}
 
 function VideoCard({
   video,
@@ -27,8 +32,9 @@ function VideoCard({
   onClose: () => void;
 }) {
   const [loading, setLoading] = useState(false);
-  const thumb = video.thumbnail || getYouTubeThumbnail(video.videoUrl);
-  const embed = getYouTubeEmbedUrl(video.videoUrl, { autoplay: true });
+  const resolved = resolveVideoUrl(video.videoUrl, { autoplay: true });
+  const thumb = video.thumbnail || resolved?.thumbnail;
+  const isVertical = isVerticalVideoUrl(video.videoUrl);
 
   useEffect(() => {
     if (isPlaying) setLoading(true);
@@ -39,11 +45,14 @@ function VideoCard({
     onPlay();
   };
 
+  const frameClass = isVertical ? 'shorts-frame shorts-frame--vertical' : 'landscape-frame';
+  const cardWidthClass = isVertical ? 'scroll-row-card-shorts' : 'scroll-row-card';
+
   return (
-    <article className="scroll-row-card">
-      <div className="relative aspect-video overflow-hidden rounded-lg bg-black/50">
+    <article className={cardWidthClass}>
+      <div className={frameClass}>
         <AnimatePresence mode="wait">
-          {isPlaying && embed ? (
+          {isPlaying && resolved ? (
             <motion.div
               key="player"
               initial={{ opacity: 0 }}
@@ -53,25 +62,57 @@ function VideoCard({
               className="absolute inset-0"
             >
               {loading && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50">
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/60">
                   <Loader2 className="h-8 w-8 animate-spin text-brand-gold-400" />
                 </div>
               )}
-              <iframe
-                src={embed}
-                title={video.title}
-                className="h-full w-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                onLoad={() => setLoading(false)}
-              />
+              {resolved.kind === 'native' ? (
+                <video
+                  src={resolved.src}
+                  className="h-full w-full object-cover"
+                  controls
+                  autoPlay
+                  playsInline
+                  onLoadedData={() => setLoading(false)}
+                  onCanPlay={() => setLoading(false)}
+                />
+              ) : (
+                <iframe
+                  src={resolved.src}
+                  title={video.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  allowFullScreen
+                  onLoad={() => setLoading(false)}
+                />
+              )}
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+                className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition hover:bg-black/90"
                 aria-label="Жабуу"
               >
                 <X className="h-4 w-4" />
+              </button>
+            </motion.div>
+          ) : isPlaying && !resolved ? (
+            <motion.div
+              key="fallback"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/80 p-4 text-center"
+            >
+              <p className="text-xs text-slate-300 sm:text-sm">Бул шилтемени сайтта ойнотуу мүмкүн эмес</p>
+              <a
+                href={video.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary inline-flex text-xs sm:text-sm"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Сырткы ачуу
+              </a>
+              <button type="button" onClick={onClose} className="text-xs text-slate-400 underline">
+                Жабуу
               </button>
             </motion.div>
           ) : (
@@ -85,21 +126,32 @@ function VideoCard({
               className="group relative h-full w-full"
               aria-label={`${video.title} видеосун ойнотуу`}
             >
-              {thumb && (
-                <Image src={thumb} alt="" fill className="object-cover" unoptimized sizes="320px" />
+              {thumb ? (
+                <Image
+                  src={thumb}
+                  alt=""
+                  fill
+                  className="object-cover object-center"
+                  unoptimized
+                  sizes={isVertical ? '240px' : '320px'}
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-b from-brand-navy-800 via-brand-navy-900 to-black" />
               )}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 transition group-hover:bg-black/20">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90">
-                  <Play className="ml-0.5 h-5 w-5 text-brand-navy-900" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 transition group-hover:from-black/60" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/95 shadow-lg transition group-hover:scale-105">
+                  <Play className="ml-0.5 h-6 w-6 text-brand-navy-900" />
                 </span>
               </div>
+              {isVertical && (
+                <span className="absolute left-2 top-2 rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
+                  Shorts
+                </span>
+              )}
             </motion.button>
           )}
         </AnimatePresence>
-      </div>
-      <div className="mt-3 px-0.5">
-        <p className="line-clamp-2 text-sm font-semibold text-white">{video.title}</p>
-        <p className="mt-0.5 text-xs text-slate-400">{video.studentName}</p>
       </div>
     </article>
   );
@@ -115,8 +167,10 @@ export default function VideoTestimonials({
   const [playingId, setPlayingId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const scrollStep = 260;
+
   const scroll = (dir: 'left' | 'right') => {
-    scrollRef.current?.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' });
+    scrollRef.current?.scrollBy({ left: dir === 'left' ? -scrollStep : scrollStep, behavior: 'smooth' });
   };
 
   const navButtons =
@@ -147,15 +201,15 @@ export default function VideoTestimonials({
         <SectionHeading badgeIcon={Video} badge="Пикирлер" title={title} subtitle={subtitle} actions={navButtons} />
 
         {!publicDataLoaded ? (
-          <div className="scroll-row">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="scroll-row-card aspect-video animate-pulse rounded-lg bg-white/5" />
+          <div className="scroll-row gap-4 sm:gap-5">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="scroll-row-card-shorts shorts-frame animate-pulse bg-white/5" />
             ))}
           </div>
         ) : active.length === 0 ? (
           <EmptyState icon={Video} title="Видео пикирлер жакында" />
         ) : (
-          <div ref={scrollRef} className="scroll-row gap-4 sm:gap-5">
+          <div ref={scrollRef} className="scroll-row gap-4 sm:gap-5 md:gap-6">
             {active.map((video) => (
               <VideoCard
                 key={video.id}

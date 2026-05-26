@@ -13,22 +13,7 @@ export type NormalizedBanner = Banner & {
 };
 
 export const FALLBACK_BANNERS: Omit<Banner, 'id'>[] = [
-  {
-    title: 'Бишкектеги премиум IT академиясы',
-    subtitle: 'Балдар үчүн структураланган программалоо, логика жана чыныгы долбоорлор',
-    valueProposition:
-      'Менторлук, практика жана ачык прогресс — ата-эне ишенет, окуучу натыжаны көрөт.',
-    image:
-      'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=900&fit=crop&q=80',
-    ctaText: 'Пробный сабакка жазылуу',
-    ctaLink: '#courses',
-    secondaryCtaText: '',
-    secondaryCtaLink: '',
-    order: 0,
-    isActive: true,
-    textAlign: 'left',
-    overlayOpacity: 20,
-  },
+
 ];
 
 export function normalizeBanner(b: Banner): NormalizedBanner {

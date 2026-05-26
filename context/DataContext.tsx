@@ -20,7 +20,7 @@ import { auth, db, isFirebaseConfigured } from '@/lib/firebase';
 import { requireAdminRole, requireStaffRole, stripUndefined } from '@/lib/firestoreAdmin';
 import { isAdminEmail } from '@/lib/adminAuth';
 import { isStaffRole, isAdminRole } from '@/lib/roles';
-import { courseSlugFromTitle } from '@/lib/courseSlug';
+import { courseSlugFromTitle, normalizeCourseSlugs } from '@/lib/courseSlug';
 import type {
   Course,
   Teacher,
@@ -190,7 +190,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       onSnapshot(collection(firestore, 'testQuestions'), (s) => mapOrdered<TestQuestion>(s, setTestQuestions), onErr('testQuestions')),
       onSnapshot(collection(firestore, 'videoReviews'), (s) => mapOrdered<VideoReview>(s, setVideoReviews), onErr('videoReviews')),
       onSnapshot(collection(firestore, 'courses'), (s) => {
-        setCourses(s.docs.map((d) => ({ id: d.id, ...d.data() })) as Course[]);
+        const items = s.docs.map((d) => ({ id: d.id, ...d.data() })) as Course[];
+        setCourses(normalizeCourseSlugs(items));
         markLoaded();
       }, onErr('courses')),
       onSnapshot(collection(firestore, 'teachers'), (s) => mapOrdered<Teacher>(s, setTeachers), onErr('teachers')),
