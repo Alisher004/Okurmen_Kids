@@ -10,7 +10,6 @@ import AcademyLife from '@/components/landing/AcademyLife';
 import VideoTestimonials from '@/components/landing/VideoTestimonials';
 import TestIntro from '@/components/landing/TestIntro';
 import FaqSection from '@/components/landing/FaqSection';
-import TrialLessonCta from '@/components/landing/TrialLessonCta';
 import Contact from '@/components/landing/Contact';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
@@ -30,7 +29,6 @@ export default function Home() {
         <VideoTestimonials />
         <TestIntro />
         <FaqSection />
-        <TrialLessonCta />
         <Contact />
       </main>
       <Footer />

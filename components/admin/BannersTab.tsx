@@ -14,7 +14,7 @@ const empty: Omit<Banner, 'id'> = {
   image: '',
   imageMobile: '',
   ctaText: 'Пробный сабакка жазылуу',
-  ctaLink: '#trial-lesson',
+  ctaLink: '#courses',
   secondaryCtaText: '',
   secondaryCtaLink: '',
   textAlign: 'left',

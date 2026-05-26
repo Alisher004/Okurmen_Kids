@@ -29,8 +29,9 @@ const trustStats = [
 ];
 
 export default function WhyUsDeep() {
-  const scrollToTrial = () => {
-    document.getElementById('trial-lesson')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToCourses = () => {
+    document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' });
+    history.replaceState(null, '', `${window.location.pathname}#courses`);
   };
 
   return (
@@ -53,7 +54,7 @@ export default function WhyUsDeep() {
                 Okurmen Kids — структураланган IT билим берүү. Окуучу практикадан натыжаны көрөт; ата-эне
                 прогрессди түшүнөт.
               </p>
-              <button type="button" onClick={scrollToTrial} className="btn-primary mt-6">
+              <button type="button" onClick={scrollToCourses} className="btn-primary mt-6">
                 Пробный сабакка жазылуу
                 <ArrowRight className="h-4 w-4" />
               </button>

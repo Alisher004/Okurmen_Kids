@@ -18,6 +18,7 @@ export default function CoursesTab() {
     icon: 'book',
     color: 'from-blue-500 to-blue-600',
     image: '',
+    slug: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +40,7 @@ export default function CoursesTab() {
       icon: 'book',
       color: 'from-blue-500 to-blue-600',
       image: '',
+      slug: '',
     });
     setEditingCourse(null);
     setShowModal(false);
@@ -54,6 +56,7 @@ export default function CoursesTab() {
       icon: course.icon || 'book',
       color: course.color || 'from-blue-500 to-blue-600',
       image: course.image || '',
+      slug: course.slug || '',
     });
     setShowModal(true);
   };
@@ -152,6 +155,13 @@ export default function CoursesTab() {
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 outline-none focus:border-blue-500"
                 required
+              />
+              <input
+                type="text"
+                placeholder="Slug (URL, мис: frontend) — бош болсо автоматтык"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 outline-none focus:border-blue-500"
               />
               <input
                 type="text"

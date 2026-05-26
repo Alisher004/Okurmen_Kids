@@ -16,8 +16,7 @@ export default function FaqSection() {
         <SectionHeading
           badgeIcon={HelpCircle}
           badge="FAQ"
-          title="Көп берилүүчү суроолор"
-          subtitle="Ачык жооптор — жазылуу чечимин кабыл алуу оңой болушу үчүн"
+          title="Ата-энелер бизден эмнелерди сурайт?"
         />
         {!publicDataLoaded ? (
           <div className="mx-auto max-w-4xl animate-pulse space-y-4">

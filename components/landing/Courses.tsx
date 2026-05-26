@@ -1,10 +1,12 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Clock, GraduationCap, BookOpen, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useData } from '@/context/DataContext';
 import { getCourseHighlights } from '@/lib/coursePresentation';
+import { courseDetailPath } from '@/lib/courseSlug';
 import EmptyState from '@/components/ui/EmptyState';
 import SectionHeading from './SectionHeading';
 
@@ -13,12 +15,6 @@ const PLACEHOLDER =
 
 export default function Courses() {
   const { courses, publicDataLoaded, firebaseConfigured } = useData();
-
-  const scrollToEnroll = (courseName?: string) => {
-    const el = document.getElementById('trial-lesson');
-    el?.scrollIntoView({ behavior: 'smooth' });
-    if (courseName) sessionStorage.setItem('okurmen_prefill_course', courseName);
-  };
 
   return (
     <section id="courses" className="section-layer">
@@ -30,9 +26,9 @@ export default function Courses() {
         />
 
         {!publicDataLoaded ? (
-          <div className="mx-auto max-w-4xl animate-pulse space-y-8">
+          <div className="mx-auto max-w-5xl animate-pulse space-y-8">
             {[1, 2].map((i) => (
-              <div key={i} className="h-48 rounded-lg bg-white/5" />
+              <div key={i} className="min-h-[420px] rounded-lg bg-white/5 sm:min-h-[380px]" />
             ))}
           </div>
         ) : courses.length === 0 ? (
@@ -41,11 +37,6 @@ export default function Courses() {
               icon={BookOpen}
               title="Курстар жакында"
               description={firebaseConfigured ? 'Жакында жаңы программалар кошулат.' : 'Firebase орнотулганда көрүнөт.'}
-              action={
-                <button type="button" onClick={() => scrollToEnroll()} className="btn-primary">
-                  Жазылуу
-                </button>
-              }
             />
           </div>
         ) : (
@@ -110,10 +101,10 @@ export default function Courses() {
                       </ul>
                     </div>
 
-                    <button type="button" onClick={() => scrollToEnroll(course.title)} className="btn-primary mt-8">
-                      Курска жазылуу
+                    <Link href={courseDetailPath(course)} className="btn-primary mt-8 inline-flex">
+                      Кененирээк маалымат
                       <ArrowRight className="h-4 w-4" />
-                    </button>
+                    </Link>
                   </div>
                 </motion.article>
               );

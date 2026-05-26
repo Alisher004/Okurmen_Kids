@@ -9,6 +9,8 @@ export interface Course {
   icon: string;
   color: string;
   image?: string;
+  /** URL slug for /courses/[slug]; auto-generated from title if omitted */
+  slug?: string;
 }
 
 export interface Teacher {

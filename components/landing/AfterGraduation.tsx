@@ -30,8 +30,9 @@ const paths = [
 ];
 
 export default function AfterGraduation() {
-  const scrollToTrial = () => {
-    document.getElementById('trial-lesson')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToCourses = () => {
+    document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' });
+    history.replaceState(null, '', `${window.location.pathname}#courses`);
   };
 
   return (
@@ -80,7 +81,7 @@ export default function AfterGraduation() {
               <strong className="font-semibold text-slate-200">команда менен иштөө</strong> маданиятын күтөт.
               Ошондуктан биз Kids этабында эле долбоордук тажрыйба жана коммуникацияны өстүрөбүз.
             </p>
-            <button type="button" onClick={scrollToTrial} className="btn-primary mt-6">
+            <button type="button" onClick={scrollToCourses} className="btn-primary mt-6">
               Баштапкы кадамды талкуулаңыз
               <ArrowRight className="h-4 w-4" />
             </button>

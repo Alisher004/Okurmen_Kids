@@ -216,7 +216,7 @@ export default function SkillTest() {
                       total={total}
                       onRetry={resetTest}
                       onEnroll={() => {
-                        document.getElementById('trial-lesson')?.scrollIntoView({ behavior: 'smooth' });
+                        window.location.href = '/#courses';
                       }}
                     />
                   </motion.div>

@@ -6,6 +6,7 @@ import { User, Phone, Calendar, CheckCircle2, Lightbulb } from 'lucide-react';
 import TestResultScreen from '@/components/landing/TestResultScreen';
 import { useData } from '@/context/DataContext';
 import { getFirestoreErrorMessage } from '@/lib/firestoreAdmin';
+import { getCourseSlug } from '@/lib/courseSlug';
 import EmptyState from '@/components/ui/EmptyState';
 import { ClipboardCheck } from 'lucide-react';
 
@@ -15,7 +16,7 @@ type FeedbackKind = 'correct' | 'hint';
 const FEEDBACK_DELAY_MS = 1300;
 
 export default function SkillTestFlow() {
-  const { testQuestions, addTestResult, firebaseConfigured, publicDataLoaded } = useData();
+  const { testQuestions, addTestResult, firebaseConfigured, publicDataLoaded, courses } = useData();
   const questions = useMemo(
     () => testQuestions.filter((q) => q.isActive !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [testQuestions]
@@ -244,7 +245,10 @@ export default function SkillTestFlow() {
               total={total}
               onRetry={resetTest}
               onEnroll={() => {
-                window.location.href = '/#trial-lesson';
+                const first = courses[0];
+                window.location.href = first
+                  ? `/courses/${getCourseSlug(first)}#trial-lesson`
+                  : '/#courses';
               }}
             />
           </motion.div>

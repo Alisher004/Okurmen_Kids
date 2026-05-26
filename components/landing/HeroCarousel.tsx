@@ -13,6 +13,7 @@ import {
   normalizeBanner,
   type NormalizedBanner,
 } from '@/lib/heroBanner';
+import { scrollToSectionId } from '@/lib/scrollRestore';
 import type { Banner } from '@/lib/types';
 
 const AUTOPLAY_MS = 7000;
@@ -52,8 +53,16 @@ function CtaLink({
     );
   }
   if (href.startsWith('#')) {
+    const id = href.slice(1);
     return (
-      <a href={href} className={className}>
+      <a
+        href={href}
+        className={className}
+        onClick={(e) => {
+          e.preventDefault();
+          scrollToSectionId(id, { smooth: true, updateHash: true });
+        }}
+      >
         {children}
       </a>
     );

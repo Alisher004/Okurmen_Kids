@@ -6,6 +6,7 @@ import { Menu, X, Send, Phone } from 'lucide-react';
 import LogoMark from './LogoMark';
 import { useData } from '@/context/DataContext';
 import { useEnrollModal } from '@/context/EnrollModalContext';
+import { scrollToSectionId } from '@/lib/scrollRestore';
 
 export default function Navbar() {
   const { courses, publicDataLoaded } = useData();
@@ -20,7 +21,7 @@ export default function Navbar() {
   }, []);
 
   const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    scrollToSectionId(id, { smooth: true, updateHash: true });
     setIsOpen(false);
   };
 
@@ -30,18 +31,11 @@ export default function Navbar() {
   const navItems = [
     { id: 'why-us', label: 'Биз жөнүндө', type: 'scroll' as const },
     publicDataLoaded && courses.length > 0 && { id: 'courses', label: 'Курстар', type: 'scroll' as const },
-    { href: '#teachers', label: 'Мугалимдер', type: 'link' as const },
+    { id: 'teachers', label: 'Мугалимдер', type: 'scroll' as const },
     { id: 'faq', label: 'FAQ', type: 'scroll' as const },
-  ].filter(Boolean) as Array<
-    | { id: string; label: string; type: 'scroll' }
-    | { href: string; label: string; type: 'link' }
-  >;
+  ].filter(Boolean) as Array<{ id: string; label: string; type: 'scroll' }>;
 
   const handleNav = (item: (typeof navItems)[number]) => {
-    if (item.type === 'link') {
-      setIsOpen(false);
-      return;
-    }
     scrollToSection(item.id);
   };
 
@@ -58,17 +52,11 @@ export default function Navbar() {
           </button>
 
           <div className="hidden items-center gap-5 xl:flex">
-            {navItems.map((item) =>
-              item.type === 'link' ? (
-                <Link key={item.href} href={item.href} className={navLink}>
-                  {item.label}
-                </Link>
-              ) : (
-                <button key={item.id} type="button" onClick={() => handleNav(item)} className={navLink}>
-                  {item.label}
-                </button>
-              )
-            )}
+            {navItems.map((item) => (
+              <button key={item.id} type="button" onClick={() => handleNav(item)} className={navLink}>
+                {item.label}
+              </button>
+            ))}
             <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary !py-2.5 !text-sm">
               <Phone className="h-4 w-4" />
               Байланыш
@@ -91,27 +79,16 @@ export default function Navbar() {
 
         {isOpen && (
           <div className="space-y-1 border-t border-white/10 py-4 xl:hidden">
-            {navItems.map((item) =>
-              item.type === 'link' ? (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="block w-full rounded-xl px-4 py-3 text-left font-medium text-white/90 hover:bg-white/10"
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => handleNav(item)}
-                  className="block w-full rounded-xl px-4 py-3 text-left font-medium text-white/90 hover:bg-white/10"
-                >
-                  {item.label}
-                </button>
-              )
-            )}
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleNav(item)}
+                className="block w-full rounded-xl px-4 py-3 text-left font-medium text-white/90 hover:bg-white/10"
+              >
+                {item.label}
+              </button>
+            ))}
             <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary mt-2 w-full">
               <Phone className="h-4 w-4" />
               Байланыш

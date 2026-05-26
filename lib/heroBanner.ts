@@ -21,7 +21,7 @@ export const FALLBACK_BANNERS: Omit<Banner, 'id'>[] = [
     image:
       'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=900&fit=crop&q=80',
     ctaText: 'Пробный сабакка жазылуу',
-    ctaLink: '#trial-lesson',
+    ctaLink: '#courses',
     secondaryCtaText: '',
     secondaryCtaLink: '',
     order: 0,
@@ -33,7 +33,7 @@ export const FALLBACK_BANNERS: Omit<Banner, 'id'>[] = [
 
 export function normalizeBanner(b: Banner): NormalizedBanner {
   const primaryText = b.ctaText?.trim() || 'Пробный сабакка жазылуу';
-  const primaryLink = b.ctaLink?.trim() || '#trial-lesson';
+  const primaryLink = b.ctaLink?.trim() || '#courses';
 
   return {
     ...b,

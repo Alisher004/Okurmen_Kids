@@ -20,6 +20,7 @@ import { auth, db, isFirebaseConfigured } from '@/lib/firebase';
 import { requireAdminRole, requireStaffRole, stripUndefined } from '@/lib/firestoreAdmin';
 import { isAdminEmail } from '@/lib/adminAuth';
 import { isStaffRole, isAdminRole } from '@/lib/roles';
+import { courseSlugFromTitle } from '@/lib/courseSlug';
 import type {
   Course,
   Teacher,
@@ -356,11 +357,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const addCourse = async (course: Omit<Course, 'id'>) => {
     adminGuard();
-    await addDoc(collection(requireDb(), 'courses'), stripUndefined(course));
+    const slug = course.slug?.trim() || courseSlugFromTitle(course.title);
+    await addDoc(collection(requireDb(), 'courses'), stripUndefined({ ...course, slug }));
   };
   const updateCourse = async (id: string, course: Omit<Course, 'id'>) => {
     adminGuard();
-    await updateDoc(doc(requireDb(), 'courses', id), stripUndefined(course));
+    const slug = course.slug?.trim() || courseSlugFromTitle(course.title);
+    await updateDoc(doc(requireDb(), 'courses', id), stripUndefined({ ...course, slug }));
   };
   const deleteCourse = async (id: string) => {
     adminGuard();
