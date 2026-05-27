@@ -133,6 +133,48 @@
     @apply relative aspect-video overflow-hidden rounded-xl border border-white/[0.08] bg-black/50;
   }
 
+  /* Course detail page */
+  .course-hero-glow {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 85% 40%, rgba(59, 113, 185, 0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 10% 80%, rgba(255, 184, 0, 0.08) 0%, transparent 50%),
+      linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.4) 55%, rgba(15, 23, 42, 0.95) 100%);
+  }
+
+  .course-section-num {
+    @apply font-mono text-xs font-semibold tracking-[0.2em] text-brand-gold-500/90;
+  }
+
+  .course-stat-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3.5 py-1.5 text-xs font-medium text-slate-200 backdrop-blur-sm sm:text-sm;
+  }
+
+  .course-content-card {
+    @apply relative overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] p-6 sm:p-8;
+  }
+
+  .course-content-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 184, 0, 0.35), transparent);
+    opacity: 0.8;
+  }
+
+  .course-step-card {
+    @apply relative rounded-xl border border-white/[0.08] bg-white/[0.02] p-5 transition-colors duration-200 hover:border-white/[0.12] hover:bg-white/[0.04] sm:p-6;
+  }
+
+  .course-sidebar-panel {
+    @apply sticky top-[calc(var(--nav-height)+1.5rem)] space-y-4 rounded-xl border border-white/[0.08] bg-white/[0.04] p-5 backdrop-blur-sm sm:p-6;
+  }
+
   .brand-card {
     @apply relative overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.04] transition-colors duration-200;
   }

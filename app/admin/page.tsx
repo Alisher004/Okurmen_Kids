@@ -13,11 +13,12 @@ import {
   BarChart3,
   ClipboardCheck,
   CalendarDays,
-  ShieldCheck,
   AlertTriangle,
   ImageIcon,
   HelpCircle,
   Video,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import LeadsTab from '@/components/admin/LeadsTab';
@@ -69,6 +70,7 @@ export default function AdminPanel() {
   const [error, setError] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('analytics');
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,7 +147,6 @@ export default function AdminPanel() {
     { id: 'teachers', label: 'Мугалимдер', icon: GraduationCap, count: teachers.length },
     { id: 'students', label: 'Студенттер', icon: TrendingUp, count: students.length },
   ];
-
   const overviewCards = [
     { label: 'Жазылуулар', value: leads.length, tab: 'leads' as AdminTab },
     { label: 'Пробный урок', value: trialLessons.length, tab: 'trials' as AdminTab },
@@ -184,20 +185,75 @@ export default function AdminPanel() {
         </aside>
 
         <main className="min-w-0 flex-1 px-4 py-5 sm:px-6">
-          <header className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
-            <div>
-              <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-sky-300">
-                <ShieldCheck className="h-4 w-4" /> Admin
-              </p>
-              <h2 className="text-2xl font-bold">Башкаруу</h2>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-slate-400">{new Date().toLocaleDateString('ru-RU')}</span>
-              <button type="button" onClick={() => auth && signOut(auth)} className="flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm">
-                <LogOut className="h-4 w-4" /> Чыгуу
-              </button>
+          <header className="mb-6 border-b border-white/10 pb-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="lg:hidden">
+                <h1 className="text-lg font-bold">Okurmen Kids</h1>
+                <p className="text-xs text-slate-400">Админ панель</p>
+              </div>
+              <div className="hidden lg:block">
+                <h2 className="text-2xl font-bold">Башкаруу</h2>
+                <p className="text-xs uppercase tracking-wider text-sky-300">Admin</p>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-3">
+                <span className="hidden text-sm text-slate-400 sm:inline">
+                  {new Date().toLocaleDateString('ru-RU')}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileNavOpen((prev) => !prev)}
+                  className="rounded-lg border border-white/10 bg-white/10 p-2 text-slate-200 hover:bg-white/20 lg:hidden"
+                  aria-label={isMobileNavOpen ? 'Жабуу' : 'Меню ачуу'}
+                >
+                  {isMobileNavOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => auth && signOut(auth)}
+                  className="hidden items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm lg:flex"
+                >
+                  <LogOut className="h-4 w-4" /> Чыгуу
+                </button>
+              </div>
             </div>
           </header>
+
+          {isMobileNavOpen && (
+            <div className="mb-4 rounded-2xl border border-white/10 bg-white/10 p-2 lg:hidden">
+              <nav className="space-y-1">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setIsMobileNavOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
+                      activeTab === tab.id ? 'bg-sky-500 text-white' : 'text-slate-300 hover:bg-white/10'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <tab.icon className="h-4 w-4" />
+                      {tab.label}
+                    </span>
+                    {tab.count !== null && <span className="text-xs opacity-80">{tab.count}</span>}
+                  </button>
+                ))}
+              </nav>
+              <div className="mt-2 border-t border-white/10 pt-2">
+                <button
+                  type="button"
+                  onClick={() => auth && signOut(auth)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold text-white"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Чыгуу
+                </button>
+              </div>
+            </div>
+          )}
 
           {!firebaseConfigured && (
             <p className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">

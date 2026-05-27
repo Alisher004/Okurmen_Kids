@@ -28,7 +28,10 @@ function getVimeoEmbed(url: string, autoplay?: boolean): string | null {
   const id = getVimeoId(url);
   if (!id) return null;
   const params = new URLSearchParams();
-  if (autoplay) params.set('autoplay', '1');
+  if (autoplay) {
+    params.set('autoplay', '1');
+    params.set('muted', '0');
+  }
   const q = params.toString();
   return `https://player.vimeo.com/video/${id}${q ? `?${q}` : ''}`;
 }
@@ -39,10 +42,13 @@ function getGoogleDriveEmbed(url: string): string | null {
   return null;
 }
 
-function getRutubeEmbed(url: string): string | null {
+function getRutubeEmbed(url: string, autoplay?: boolean): string | null {
   const m = url.match(/rutube\.ru\/video\/([a-f0-9]+)/i);
-  if (m?.[1]) return `https://rutube.ru/play/embed/${m[1]}`;
-  return null;
+  if (!m?.[1]) return null;
+  const params = new URLSearchParams();
+  if (autoplay) params.set('autoplay', 'true');
+  const q = params.toString();
+  return `https://rutube.ru/play/embed/${m[1]}${q ? `?${q}` : ''}`;
 }
 
 function isDirectVideoUrl(url: string): boolean {
@@ -67,7 +73,7 @@ export function resolveVideoUrl(url: string, opts?: { autoplay?: boolean }): Res
 
   const autoplay = opts?.autoplay ?? false;
 
-  const youtubeEmbed = getYouTubeEmbedUrl(trimmed, { autoplay, mute: autoplay });
+  const youtubeEmbed = getYouTubeEmbedUrl(trimmed, { autoplay });
   if (youtubeEmbed) {
     return {
       kind: 'iframe',
@@ -90,7 +96,7 @@ export function resolveVideoUrl(url: string, opts?: { autoplay?: boolean }): Res
     return { kind: 'iframe', src: driveEmbed, thumbnail: null };
   }
 
-  const rutubeEmbed = getRutubeEmbed(trimmed);
+  const rutubeEmbed = getRutubeEmbed(trimmed, autoplay);
   if (rutubeEmbed) {
     return { kind: 'iframe', src: rutubeEmbed, thumbnail: null };
   }

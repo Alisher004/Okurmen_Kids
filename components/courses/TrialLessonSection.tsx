@@ -73,20 +73,22 @@ export default function TrialLessonSection({ defaultCourseInterest }: TrialLesso
   };
 
   return (
-    <section id="trial-lesson" className="section-layer border-t border-white/[0.08]">
+    <section id="trial-lesson" className="section-layer border-t-0">
       <div className="site-container">
+        <div className="mb-10 text-center md:mb-12">
+          <p className="section-badge mb-3 inline-flex">
+            <CalendarCheck className="h-4 w-4" />
+            Кийинки кадам
+          </p>
+          <h2 className="section-headline mx-auto max-w-2xl">Пробный сабакка жазылыңыз</h2>
+          <p className="mx-auto mt-3 max-w-lg text-sm text-slate-400 sm:text-base">
+            Бул программа сизге ылайыктуу экенин биринчи сабакта көрүңүз
+          </p>
+        </div>
+
         <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-16 xl:gap-20">
           <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <p className="section-badge mb-4">
-              <CalendarCheck className="h-4 w-4" />
-              Пробный сабак
-            </p>
-            <h2 className="section-headline max-w-lg">Пробный сабакка жазылыңыз</h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-400 sm:text-base">
-              Бул программа сизге ылайыктуу экенин биринчи сабакта көрүңүз. Менеджер сиз менен байланышып, ылайыктуу
-              убакыт дайындайт.
-            </p>
-            <ul className="mt-6 space-y-2 text-sm text-slate-400">
+            <ul className="mt-0 space-y-2 text-sm text-slate-400 lg:mt-6">
               <li>— Жашына ылайык программа менен таанышуу</li>
               <li>— Мугалим жана класс атмосферасы</li>
               <li>— Кийинки кадам боюнча жеке сунуш</li>

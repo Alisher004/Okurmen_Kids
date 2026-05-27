@@ -53,7 +53,7 @@ export function isYouTubeShortUrl(url: string): boolean {
 
 export function getYouTubeEmbedUrl(
   url: string,
-  opts?: { autoplay?: boolean; mute?: boolean }
+  opts?: { autoplay?: boolean }
 ): string | null {
   const id = getYouTubeVideoId(url);
   if (!id) return null;
@@ -64,7 +64,6 @@ export function getYouTubeEmbedUrl(
     playsinline: '1',
   });
   if (opts?.autoplay) params.set('autoplay', '1');
-  if (opts?.mute) params.set('mute', '1');
 
   return `https://www.youtube.com/embed/${id}?${params.toString()}`;
 }

@@ -73,11 +73,22 @@ function VideoCard({
                   controls
                   autoPlay
                   playsInline
-                  onLoadedData={() => setLoading(false)}
-                  onCanPlay={() => setLoading(false)}
+                  onLoadedData={(e) => {
+                    const el = e.currentTarget;
+                    el.muted = false;
+                    el.volume = 1;
+                    setLoading(false);
+                  }}
+                  onCanPlay={(e) => {
+                    const el = e.currentTarget;
+                    el.muted = false;
+                    el.volume = 1;
+                    setLoading(false);
+                  }}
                 />
               ) : (
                 <iframe
+                  key={resolved.src}
                   src={resolved.src}
                   title={video.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
@@ -144,11 +155,6 @@ function VideoCard({
                   <Play className="ml-0.5 h-6 w-6 text-brand-navy-900" />
                 </span>
               </div>
-              {isVertical && (
-                <span className="absolute left-2 top-2 rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-sm">
-                  Shorts
-                </span>
-              )}
             </motion.button>
           )}
         </AnimatePresence>
