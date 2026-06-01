@@ -16,13 +16,13 @@ export default function ImageUrlField({
   value,
   onChange,
   placeholder = 'https://example.com/surat.jpg',
-  hint = 'Сүрөттү жүктөбөйсүз — интернеттеги шилтемени көчүрүп коюңуз (Imgur, Google Drive, сайт ж.б.).',
+  hint = 'Сүрөттүн интернеттеги шилтемесин коюңуз (Imgur, Google Drive, Cloudinary ж.б.).',
   required = false,
 }: ImageUrlFieldProps) {
   return (
     <div>
       <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
-        <Link2 className="h-4 w-4 text-blue-600" />
+        <Link2 className="h-4 w-4 text-brand-gold-500" />
         <span>
           {label} {required && '*'}
         </span>
@@ -56,7 +56,7 @@ export default function ImageUrlField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 outline-none focus:border-blue-500"
+        className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 outline-none focus:border-brand-gold-500"
         required={required}
       />
       <p className="mt-1.5 text-xs leading-relaxed text-gray-500">{hint}</p>

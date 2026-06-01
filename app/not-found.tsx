@@ -7,7 +7,7 @@ import LogoMark from '@/components/landing/LogoMark';
 
 export default function NotFound() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-brand-navy-50 to-brand-gold-50/30 px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-brand-navy-900 px-4">
       <motion.div
         className="relative z-10 w-full max-w-lg text-center"
         initial={{ opacity: 0, y: 24 }}
@@ -15,16 +15,16 @@ export default function NotFound() {
         transition={{ duration: 0.5 }}
       >
         <div className="mb-8 flex justify-center">
-          <LogoMark size="xl" showText />
+          <LogoMark size="xl" showText variant="light" />
         </div>
 
-        <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-brand-navy-500">
+        <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
           404 — Бет табылган жок
         </p>
 
         <h1 className="mb-4 text-7xl font-black leading-none gradient-brand-text md:text-8xl">404</h1>
 
-        <p className="mb-10 text-lg leading-relaxed text-brand-navy-600">
+        <p className="mb-10 text-lg leading-relaxed text-slate-400">
           Сиз издеген бет жок же жылдырылган болушу мүмкүн. Башкы бетке кайтып, курстар жана байланыш
           бөлүмдөрүн көрүңүз.
         </p>

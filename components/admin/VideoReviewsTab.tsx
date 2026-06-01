@@ -35,7 +35,7 @@ export default function VideoReviewsTab() {
     <div>
       <div className="mb-6 flex justify-between">
         <h2 className="text-2xl font-bold">Видео пикирлер ({videoReviews.length})</h2>
-        <button type="button" onClick={() => setShowModal(true)} className="rounded-xl bg-sky-500 px-5 py-2.5 text-white font-semibold"><Plus className="inline h-5 w-5" /> Кошуу</button>
+        <button type="button" onClick={() => setShowModal(true)} className="rounded-xl bg-brand-gold-500 px-5 py-2.5 text-white font-semibold"><Plus className="inline h-5 w-5" /> Кошуу</button>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {videoReviews.map((v) => (
@@ -67,10 +67,15 @@ export default function VideoReviewsTab() {
               <p className="text-xs text-gray-500">
                 YouTube (Shorts кошумча), Vimeo, Rutube, түз mp4/webm шилтеме же башка embed URL.
               </p>
-              <ImageUrlField value={form.thumbnail || ''} onChange={(thumbnail) => setForm({ ...form, thumbnail })} placeholder="Thumbnail URL (optional)" />
+              <ImageUrlField
+                label="Thumbnail (optional)"
+                value={form.thumbnail || ''}
+                onChange={(thumbnail) => setForm({ ...form, thumbnail })}
+                placeholder="https://example.com/thumb.jpg"
+              />
               <OrderControls order={form.order} onOrderChange={(order) => setForm({ ...form, order })} />
               <label className="flex gap-2"><input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} /> Активдүү</label>
-              <button type="submit" className="w-full rounded-xl bg-sky-500 py-3 text-white">Сактоо</button>
+              <button type="submit" className="w-full rounded-xl bg-brand-gold-500 py-3 text-white">Сактоо</button>
             </div>
           </form>
         </div>

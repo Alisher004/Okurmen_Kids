@@ -45,7 +45,7 @@ export default function WhyUsDeep() {
         />
 
         <div className="mx-auto max-w-6xl">
-          <div className="grid gap-px overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.06] md:grid-cols-12">
+          <div className="grid gap-px overflow-hidden rounded-lg border border-white/10 bg-white/[0.06] md:grid-cols-12">
             <div className="editorial-surface p-6 sm:p-8 md:col-span-5 md:p-10">
               <h3 className="text-xl font-bold leading-snug tracking-tight text-white sm:text-2xl md:text-3xl">
                 Балдар IT дүйнөсүнө ишенимдүү кадам ташайт — сиз болсо коопсуз сезесиз
@@ -86,7 +86,7 @@ export default function WhyUsDeep() {
             </div>
           </div>
 
-          <div className="mt-10 grid gap-8 border-t border-white/[0.08] pt-10 md:grid-cols-3 md:gap-12">
+          <div className="mt-10 grid gap-8 border-t border-white/10 pt-10 md:grid-cols-3 md:gap-12">
             {pillars.map((pillar, i) => (
               <motion.div
                 key={pillar.title}

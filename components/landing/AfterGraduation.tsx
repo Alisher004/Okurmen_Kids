@@ -74,7 +74,7 @@ export default function AfterGraduation() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="border-t border-white/[0.08] pt-10 text-center"
+            className="border-t border-white/10 pt-10 text-center"
           >
             <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-400 sm:text-base">
               Көп IT компаниялар{' '}

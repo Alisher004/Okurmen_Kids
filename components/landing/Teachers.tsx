@@ -41,7 +41,7 @@ export default function Teachers({ showHeading = true }: TeachersProps) {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
               >
-                <div className="relative mb-4 aspect-[4/5] overflow-hidden rounded-lg bg-slate-800">
+                <div className="relative mb-4 aspect-[4/5] overflow-hidden rounded-lg bg-brand-navy-900">
                   <img
                     src={teacher.image}
                     alt={teacher.name}
@@ -58,11 +58,11 @@ export default function Teachers({ showHeading = true }: TeachersProps) {
                 </div>
                 <div className="space-y-3 text-sm">
                   <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-500">Тажрыйба</p>
+                    <p className="text-xs uppercase tracking-wide text-slate-400">Тажрыйба</p>
                     <p className="mt-0.5 text-slate-300">{teacher.experience}</p>
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-wide text-slate-500">Билими</p>
+                    <p className="text-xs uppercase tracking-wide text-slate-400">Билими</p>
                     <p className="mt-0.5 text-slate-300">{teacher.education}</p>
                   </div>
                   <p className="leading-relaxed text-slate-400">{teacher.bio}</p>

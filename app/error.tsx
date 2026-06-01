@@ -15,9 +15,9 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-brand-navy-50 to-white px-4 text-center">
-      <h1 className="mb-2 text-2xl font-bold text-brand-navy-700">Бир нерсе туура эмес болду</h1>
-      <p className="mb-6 max-w-md text-brand-navy-600">Ката кетти. Кайра аракет кылыңыз же башкы бетке кайтыңыз.</p>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-brand-navy-900 px-4 text-center">
+      <h1 className="mb-2 text-2xl font-bold text-slate-300">Бир нерсе туура эмес болду</h1>
+      <p className="mb-6 max-w-md text-slate-400">Ката кетти. Кайра аракет кылыңыз же башкы бетке кайтыңыз.</p>
       <div className="flex gap-3">
         <button type="button" onClick={reset} className="btn-primary">
           Кайра аракет

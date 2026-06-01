@@ -40,7 +40,7 @@ export default function Courses() {
             />
           </div>
         ) : (
-          <div className="mx-auto max-w-5xl divide-y divide-white/[0.08]">
+          <div className="mx-auto max-w-5xl divide-y divide-white/10">
             {courses.map((course, index) => {
               const imageUrl = course.image || PLACEHOLDER;
               const { forWho, learns, outcome, program } = getCourseHighlights(course);
@@ -55,7 +55,7 @@ export default function Courses() {
                   className="grid items-start gap-8 py-12 first:pt-0 last:pb-0 sm:gap-10 sm:py-16 lg:grid-cols-2 lg:gap-14"
                 >
                   <div className={reversed ? 'lg:order-2' : ''}>
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-lg bg-slate-800">
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-lg bg-brand-navy-900">
                       <Image
                         src={imageUrl}
                         alt={course.title}
@@ -72,7 +72,7 @@ export default function Courses() {
                   </div>
 
                   <div className={reversed ? 'lg:order-1' : ''}>
-                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-400">
                       Программа {String(index + 1).padStart(2, '0')}
                     </p>
                     <h3 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-3xl">
@@ -85,11 +85,11 @@ export default function Courses() {
 
                     <div className="mt-6 space-y-5">
                       <div>
-                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Эмне үйрөнөт</p>
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Эмне үйрөнөт</p>
                         <p className="text-sm leading-relaxed text-slate-300">{learns}</p>
                       </div>
                       <div>
-                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Жыйынтык</p>
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Жыйынтык</p>
                         <p className="text-sm leading-relaxed text-slate-300">{outcome}</p>
                       </div>
                       <ul className="flex flex-wrap gap-2">

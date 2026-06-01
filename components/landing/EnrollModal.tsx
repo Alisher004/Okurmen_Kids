@@ -75,7 +75,7 @@ export default function EnrollModal({ open, onClose }: EnrollModalProps) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 24 }}
-            className="relative z-[1] w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a] p-6 shadow-2xl sm:p-8"
+            className="relative z-[1] w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-brand-navy-800 p-6 shadow-2xl sm:p-8"
           >
             <button
               type="button"
@@ -88,7 +88,7 @@ export default function EnrollModal({ open, onClose }: EnrollModalProps) {
 
             {done ? (
               <motion.div className="py-4 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-brand-gold-400" />
+                <CheckCircle2 className="mx-auto mb-4 h-12 w-12 text-brand-gold-500" />
                 <h2 id="enroll-modal-title" className="text-xl font-bold text-white">
                   Рахмат!
                 </h2>
@@ -101,7 +101,7 @@ export default function EnrollModal({ open, onClose }: EnrollModalProps) {
               </motion.div>
             ) : (
               <>
-                <p className="text-xs font-semibold uppercase tracking-wider text-brand-gold-400">Жазылуу</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-brand-gold-500">Жазылуу</p>
                 <h2 id="enroll-modal-title" className="mt-2 text-xl font-bold text-white sm:text-2xl">
                   Курсга жазылуу
                 </h2>

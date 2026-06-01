@@ -38,12 +38,12 @@ export default function Accordion({ items, allowMultiple = false }: AccordionPro
         return (
           <div
             key={item.id}
-            className="overflow-hidden rounded-2xl border border-brand-navy-100 bg-white shadow-card"
+            className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-sm"
           >
             <button
               type="button"
               onClick={() => toggle(item.id)}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold text-brand-navy-700 transition-colors hover:bg-brand-navy-50/50 md:px-6 md:py-5"
+              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-bold text-slate-300 transition-colors hover:bg-white/5 md:px-6 md:py-5"
               aria-expanded={open}
             >
               <span>{item.title}</span>
@@ -59,7 +59,7 @@ export default function Accordion({ items, allowMultiple = false }: AccordionPro
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25 }}
                 >
-                  <div className="border-t border-brand-navy-100 px-5 py-4 text-sm leading-relaxed text-brand-navy-600 md:px-6 md:text-base">
+                  <div className="border-t border-white/10 px-5 py-4 text-sm leading-relaxed text-slate-400 md:px-6 md:text-base">
                     {item.content}
                   </div>
                 </motion.div>

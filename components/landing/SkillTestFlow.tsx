@@ -130,13 +130,13 @@ export default function SkillTestFlow() {
     <div className={`mx-auto w-full ${step === 'result' ? 'max-w-3xl' : 'max-w-xl'}`}>
       {step !== 'result' && (
         <div className="mb-8">
-          <div className="mb-2 flex items-center justify-between text-xs font-medium text-slate-500">
+          <div className="mb-2 flex items-center justify-between text-xs font-medium text-slate-400">
             <span>
               {step === 'quiz' ? `Суроо ${currentIndex + 1} / ${total}` : 'Жыйынтык формасы'}
             </span>
             <span className="tabular-nums">{Math.round(progressPercent)}%</span>
           </div>
-          <div className="h-1 overflow-hidden rounded-full bg-white/10">
+          <div className="h-1 overflow-hidden rounded-full bg-white/5">
             <motion.div
               className="h-full rounded-full bg-brand-gold-500"
               animate={{ width: `${step === 'form' ? 100 : progressPercent}%` }}
@@ -174,7 +174,7 @@ export default function SkillTestFlow() {
                         ? 'bg-emerald-500/15 text-emerald-100 ring-1 ring-emerald-500/40'
                         : showHint
                           ? 'bg-amber-500/10 text-amber-100 ring-1 ring-amber-500/30'
-                          : 'bg-white/[0.04] text-slate-200 hover:bg-white/[0.07] active:scale-[0.99]'
+                          : 'bg-white/5 text-slate-200 hover:bg-white/[0.07] active:scale-[0.99]'
                     } ${feedback && !isSelected ? 'opacity-50' : ''}`}
                   >
                     {opt}

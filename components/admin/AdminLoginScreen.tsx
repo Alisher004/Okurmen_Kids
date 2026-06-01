@@ -26,14 +26,14 @@ export default function AdminLoginScreen({
   subtitle = 'Окурмен Кидс башкаруу панели',
 }: AdminLoginScreenProps) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#171827] p-4 text-white">
+    <div className="flex min-h-screen items-center justify-center bg-brand-navy-900 p-4 text-white">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-md rounded-[28px] border border-white/10 bg-white/[0.07] p-8 shadow-2xl backdrop-blur-xl"
       >
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-400 shadow-lg shadow-sky-500/25">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-gold-500 to-brand-gold-400 shadow-lg shadow-brand-gold-500/25">
             <span className="text-2xl font-bold text-white">OK</span>
           </div>
           <h1 className="mb-2 text-3xl font-bold">{title}</h1>
@@ -51,7 +51,7 @@ export default function AdminLoginScreen({
               type="email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20"
+              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-brand-gold-500 focus:ring-2 focus:ring-brand-gold-500/20"
               placeholder="Email жазыңыз"
               required
             />
@@ -62,7 +62,7 @@ export default function AdminLoginScreen({
               type="password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20"
+              className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-brand-gold-500 focus:ring-2 focus:ring-brand-gold-500/20"
               placeholder="Паролду жазыңыз"
               required
             />
@@ -77,7 +77,7 @@ export default function AdminLoginScreen({
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isSigningIn}
-            className="w-full rounded-xl bg-sky-500 py-3 font-semibold text-white shadow-lg shadow-sky-500/25 hover:bg-sky-400 disabled:opacity-60"
+            className="w-full rounded-xl bg-brand-gold-500 py-3 font-semibold text-white shadow-lg shadow-brand-gold-500/25 hover:bg-brand-gold-400 disabled:opacity-60"
           >
             {isSigningIn ? 'Кирүүдө...' : 'Кирүү'}
           </motion.button>

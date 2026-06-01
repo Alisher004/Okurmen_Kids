@@ -58,7 +58,7 @@ export default function AcademyLife({ id = 'academy-life', showHeading = true }:
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.04 }}
-              className="border-t border-white/[0.08] pt-6"
+              className="border-t border-white/10 pt-6"
             >
               <item.icon className="h-5 w-5 text-brand-gold-400" />
               <h3 className="mt-3 text-base font-bold text-white">{item.title}</h3>

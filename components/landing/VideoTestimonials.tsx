@@ -151,8 +151,8 @@ function VideoCard({
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20 transition group-hover:from-black/60" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/95 shadow-lg transition group-hover:scale-105">
-                  <Play className="ml-0.5 h-6 w-6 text-brand-navy-900" />
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-gold-500 shadow-[0_4px_24px_rgba(241,90,36,0.5)] ring-4 ring-black/25 transition duration-200 group-hover:scale-110 group-hover:bg-brand-gold-400 group-hover:shadow-[0_6px_32px_rgba(241,90,36,0.6)]">
+                  <Play className="ml-1 h-6 w-6 fill-white text-white" />
                 </span>
               </div>
             </motion.button>
@@ -185,7 +185,7 @@ export default function VideoTestimonials({
         <button
           type="button"
           onClick={() => scroll('left')}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-gold-400"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white transition hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-gold-400"
           aria-label="Мурунку"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -193,7 +193,7 @@ export default function VideoTestimonials({
         <button
           type="button"
           onClick={() => scroll('right')}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-gold-400"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white transition hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-gold-400"
           aria-label="Кийинки"
         >
           <ChevronRight className="h-5 w-5" />

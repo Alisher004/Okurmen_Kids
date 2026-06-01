@@ -46,17 +46,15 @@ export default function SectionHeading({
             </span>
           )}
           <h2
-            className={`section-headline ${light ? 'text-white' : 'text-brand-navy-900'} ${
-              centered ? 'mx-auto' : ''
-            }`}
+            className={`section-headline ${centered ? 'mx-auto' : ''}`}
           >
             {title}
           </h2>
           {subtitle && (
             <p
-              className={`mt-2 max-w-2xl text-sm leading-relaxed sm:mt-3 sm:text-base md:text-lg ${
-                light ? 'text-slate-400' : 'text-brand-navy-600'
-              } ${centered ? 'mx-auto' : ''}`}
+              className={`mt-2 max-w-2xl text-sm leading-relaxed text-slate-400 sm:mt-3 sm:text-base md:text-lg ${
+                centered ? 'mx-auto' : ''
+              }`}
             >
               {subtitle}
             </p>

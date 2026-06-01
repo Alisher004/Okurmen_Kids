@@ -54,7 +54,7 @@ export default function AnalyticsTab({ onNavigate }: AnalyticsTabProps) {
     { label: 'Мыкты студенттер', value: students.length, icon: Users, color: 'from-blue-500 to-blue-600', tab: 'students' as AdminTab },
     { label: 'Жазылуулар', value: leads.length, icon: FileText, color: 'from-purple-500 to-purple-600', tab: 'leads' as AdminTab },
     { label: 'Пробный урок', value: trialLessons.length, icon: Calendar, color: 'from-violet-500 to-purple-600', tab: 'trials' as AdminTab },
-    { label: 'Тест жыйынтыктары', value: testResults.length, icon: ClipboardCheck, color: 'from-cyan-400 to-teal-500', tab: 'tests' as AdminTab },
+    { label: 'Тест жыйынтыктары', value: testResults.length, icon: ClipboardCheck, color: 'from-brand-gold-500 to-brand-gold-400', tab: 'tests' as AdminTab },
     { label: 'Курстар', value: courses.length, icon: BookOpen, color: 'from-green-500 to-green-600', tab: 'courses' as AdminTab },
     { label: 'Мугалимдер', value: teachers.length, icon: TrendingUp, color: 'from-pink-500 to-pink-600', tab: 'teachers' as AdminTab },
   ];

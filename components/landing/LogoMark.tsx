@@ -32,7 +32,7 @@ export default function LogoMark({
       {showText && (
         <span className={`${s.text} font-bold leading-tight tracking-tight`}>
           <span className={variant === 'light' ? 'text-brand-gold-400' : 'text-brand-gold-500'}>Окурмен</span>{' '}
-          <span className={variant === 'light' ? 'text-white' : 'text-brand-navy-600'}>Kids</span>
+          <span className={variant === 'light' ? 'text-white' : 'text-white'}>Kids</span>
         </span>
       )}
     </div>

@@ -22,7 +22,7 @@ export default function TeachersPreview() {
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-lg bg-white/[0.04]"
+            className="relative overflow-hidden rounded-lg bg-white/5"
           >
             <Image
               src="/images/teachers-team.png"

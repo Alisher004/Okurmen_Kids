@@ -87,9 +87,9 @@ export default function AboutStory() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="border-t border-white/[0.08] pt-6"
+                className="border-t border-white/10 pt-6"
               >
-                <p className="text-3xl font-bold tracking-tight text-white/20 sm:text-4xl">{item.num}</p>
+                <p className="text-3xl font-bold tracking-tight text-white/15 sm:text-4xl">{item.num}</p>
                 <h4 className="mt-2 text-base font-bold uppercase tracking-wide text-white sm:text-lg">
                   {item.title}
                 </h4>

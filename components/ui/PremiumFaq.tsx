@@ -34,7 +34,7 @@ export default function PremiumFaq({ items }: PremiumFaqProps) {
       {items.map((item) => {
         const isOpen = openId === item.id;
         return (
-          <div key={item.id} className="border-b border-white/[0.08] last:border-0">
+          <div key={item.id} className="border-b border-white/10 last:border-0">
             <button
               type="button"
               onClick={() => {
@@ -46,7 +46,7 @@ export default function PremiumFaq({ items }: PremiumFaqProps) {
             >
               <span
                 className={`flex-1 text-base font-semibold leading-snug sm:text-lg ${
-                  isOpen ? 'text-white' : 'text-slate-200'
+                  isOpen ? 'text-brand-gold-400' : 'text-slate-200'
                 }`}
               >
                 {item.question}

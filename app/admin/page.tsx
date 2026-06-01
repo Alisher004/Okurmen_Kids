@@ -95,7 +95,7 @@ export default function AdminPanel() {
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#171827]">
+      <div className="flex min-h-screen items-center justify-center bg-[#001A3D]">
         <div className="font-semibold text-slate-300">Жүктөлүүдө...</div>
       </div>
     );
@@ -117,17 +117,17 @@ export default function AdminPanel() {
 
   if (!isAdmin) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#171827] px-4 text-center text-white">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#001A3D] px-4 text-center text-white">
         <AlertTriangle className="mb-4 h-12 w-12 text-amber-400" />
         <h1 className="text-xl font-bold">Админ уруксаты жок</h1>
         <p className="mt-2 max-w-md text-slate-400">
           Firestore&apos;до users/{authUser.uid} документин role: admin кылып түзүңүз же менеджер катары{' '}
-          <Link href="/manager" className="text-sky-400 underline">
+          <Link href="/manager" className="text-brand-gold-400 underline">
             /manager
           </Link>{' '}
           кирүү.
         </p>
-        <button type="button" onClick={() => auth && signOut(auth)} className="mt-6 text-sky-400">
+        <button type="button" onClick={() => auth && signOut(auth)} className="mt-6 text-brand-gold-400">
           Чыгуу
         </button>
       </div>
@@ -154,13 +154,13 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div className="admin-dashboard min-h-screen bg-[#171827] text-white">
+    <div className="admin-dashboard min-h-screen bg-[#001A3D] text-white">
       <div className="mx-auto flex min-h-screen w-full max-w-[1440px]">
         <aside className="hidden w-72 shrink-0 border-r border-white/10 px-6 py-7 lg:block">
           <div className="mb-8">
             <h1 className="text-lg font-bold">Okurmen Kids</h1>
             <p className="text-xs text-slate-400">Админ панель</p>
-            <Link href="/manager" className="mt-2 inline-block text-xs text-sky-400 hover:underline">
+            <Link href="/manager" className="mt-2 inline-block text-xs text-brand-gold-400 hover:underline">
               → Менеджер кабинети
             </Link>
           </div>
@@ -171,7 +171,7 @@ export default function AdminPanel() {
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
-                  activeTab === tab.id ? 'bg-sky-500 text-white' : 'text-slate-400 hover:bg-white/10'
+                  activeTab === tab.id ? 'bg-brand-gold-500 text-white' : 'text-slate-400 hover:bg-white/10'
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -193,7 +193,7 @@ export default function AdminPanel() {
               </div>
               <div className="hidden lg:block">
                 <h2 className="text-2xl font-bold">Башкаруу</h2>
-                <p className="text-xs uppercase tracking-wider text-sky-300">Admin</p>
+                <p className="text-xs uppercase tracking-wider text-brand-gold-300">Admin</p>
               </div>
 
               <div className="flex items-center gap-2 sm:gap-3">
@@ -231,7 +231,7 @@ export default function AdminPanel() {
                       setIsMobileNavOpen(false);
                     }}
                     className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold ${
-                      activeTab === tab.id ? 'bg-sky-500 text-white' : 'text-slate-300 hover:bg-white/10'
+                      activeTab === tab.id ? 'bg-brand-gold-500 text-white' : 'text-slate-300 hover:bg-white/10'
                     }`}
                   >
                     <span className="flex items-center gap-2">
@@ -268,7 +268,7 @@ export default function AdminPanel() {
                   key={c.label}
                   type="button"
                   onClick={() => setActiveTab(c.tab)}
-                  className="rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 p-5 text-left shadow-lg"
+                  className="rounded-2xl bg-gradient-to-br from-brand-gold-500 to-brand-gold-600 p-5 text-left shadow-lg"
                 >
                   <div className="text-3xl font-black">{c.value}</div>
                   <div className="text-sm font-semibold text-white/90">{c.label}</div>

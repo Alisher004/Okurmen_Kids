@@ -63,7 +63,7 @@ export default function TestQuestionsTab() {
         ))}
         <OrderControls order={form.order} onOrderChange={(order) => setForm({ ...form, order })} />
         <label className="mb-4 flex gap-2"><input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} /> Активдүү</label>
-        <button type="submit" className="w-full rounded-xl bg-sky-500 py-3 text-white font-semibold">Сактоо</button>
+        <button type="submit" className="w-full rounded-xl bg-brand-gold-500 py-3 text-white font-semibold">Сактоо</button>
       </form>
     </div>
   );

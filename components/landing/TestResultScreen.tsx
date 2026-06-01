@@ -27,10 +27,10 @@ export default function TestResultScreen({
       animate={{ opacity: 1, y: 0 }}
       className="overflow-hidden"
     >
-      <div className="border-b border-white/[0.06] pb-8 sm:pb-10">
+      <div className="border-b border-white/10 pb-8 sm:pb-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Жыйынтык</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Жыйынтык</p>
             <h3 className="max-w-xl text-xl font-bold leading-tight text-white sm:text-2xl">
               {feedback.headline}
             </h3>
@@ -41,9 +41,9 @@ export default function TestResultScreen({
           <div className="shrink-0 text-left sm:text-right">
             <p className="text-4xl font-extrabold tabular-nums tracking-tight text-white sm:text-5xl">
               {percentage}
-              <span className="text-2xl text-slate-500">%</span>
+              <span className="text-2xl text-slate-400">%</span>
             </p>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-400">
               {score} / {total} туура жооп
             </p>
           </div>
@@ -63,13 +63,13 @@ export default function TestResultScreen({
           </ul>
         </div>
         <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Өнүктүрүү багыты</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Өнүктүрүү багыты</p>
           <p className="text-sm leading-relaxed text-slate-400">{feedback.growth}</p>
           <p className="mt-4 border-l-2 border-brand-gold-500/50 pl-4 text-sm text-slate-300">{feedback.nextStep}</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-white/[0.06] pt-6 sm:flex-row sm:justify-end">
+      <div className="flex flex-col gap-2 border-t border-white/10 pt-6 sm:flex-row sm:justify-end">
         <button type="button" onClick={onRetry} className="btn-secondary px-6 py-3">
           Кайра тапшыруу
         </button>

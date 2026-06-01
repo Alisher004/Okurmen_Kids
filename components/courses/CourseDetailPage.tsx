@@ -98,11 +98,11 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
         <Navbar />
         <main className="relative z-[1] pt-[var(--nav-height)]">
           <div className="site-container animate-pulse py-12 md:py-16">
-            <div className="h-4 w-32 rounded bg-white/10" />
+            <div className="h-4 w-32 rounded bg-white/5" />
             <div className="mt-10 grid gap-10 lg:grid-cols-2">
               <div className="space-y-4">
-                <div className="h-6 w-24 rounded bg-white/10" />
-                <div className="h-12 w-full max-w-lg rounded bg-white/10" />
+                <div className="h-6 w-24 rounded bg-white/5" />
+                <div className="h-12 w-full max-w-lg rounded bg-white/5" />
                 <div className="h-20 w-full max-w-xl rounded bg-white/5" />
               </div>
               <div className="aspect-[4/3] rounded-2xl bg-white/5" />
@@ -122,7 +122,7 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
 
       <main className="relative z-[1] pt-[var(--nav-height)]">
         {/* Hero */}
-        <header className="relative overflow-hidden border-b border-white/[0.06]">
+        <header className="relative overflow-hidden border-b border-white/10">
           <div className="absolute inset-0 lg:left-[42%]">
             <Image
               src={imageUrl}
@@ -218,14 +218,14 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
                 <div className="grid gap-6 sm:grid-cols-2">
                   <motion.div {...fadeUp} className="course-content-card">
                     <Users className="h-5 w-5 text-brand-gold-400" />
-                    <h3 className="mt-3 text-sm font-semibold uppercase tracking-wider text-slate-500">
+                    <h3 className="mt-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
                       Кимге ылайыктуу
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-slate-200 sm:text-base">{detail.forWho}</p>
                   </motion.div>
                   <motion.div {...fadeUp} className="course-content-card">
                     <BookOpen className="h-5 w-5 text-brand-gold-400" />
-                    <h3 className="mt-3 text-sm font-semibold uppercase tracking-wider text-slate-500">
+                    <h3 className="mt-3 text-sm font-semibold uppercase tracking-wider text-slate-400">
                       Эмне үйрөнөт
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-slate-200 sm:text-base">{detail.learns}</p>
@@ -240,7 +240,7 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                             Модуль {i + 1}
                           </p>
                           <p className="mt-1 text-sm font-medium leading-relaxed text-slate-100 sm:text-base">
@@ -263,7 +263,7 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-6 rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-sm leading-relaxed text-slate-300 sm:text-base">
+                  <p className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5 text-sm leading-relaxed text-slate-300 sm:text-base">
                     {detail.outcome}
                   </p>
                 </SectionBlock>
@@ -273,7 +273,7 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
                     {detail.benefits.map((item) => (
                       <li
                         key={item}
-                        className="flex gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-4 sm:px-5"
+                        className="flex gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-4 sm:px-5"
                       >
                         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-brand-gold-400" />
                         <span className="text-sm leading-relaxed text-slate-200 sm:text-base">{item}</span>
@@ -295,7 +295,7 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
                 </motion.section>
 
                 <SectionBlock num="07" title="Көп берилген суроолор" className="pb-4">
-                  <dl className="divide-y divide-white/[0.08] rounded-xl border border-white/[0.08] bg-white/[0.02]">
+                  <dl className="divide-y divide-white/10 rounded-xl border border-white/10 bg-white/5">
                     {detail.faq.map((item) => (
                       <div key={item.question} className="px-5 py-5 sm:px-6 sm:py-6">
                         <dt className="text-base font-semibold text-white">{item.question}</dt>
@@ -312,23 +312,23 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-gold-400">
                     Кыскача
                   </p>
-                  <ul className="mt-4 space-y-3 border-t border-white/[0.08] pt-4 text-sm text-slate-300">
+                  <ul className="mt-4 space-y-3 border-t border-white/10 pt-4 text-sm text-slate-300">
                     <li className="flex justify-between gap-3">
-                      <span className="text-slate-500">Узактыгы</span>
+                      <span className="text-slate-400">Узактыгы</span>
                       <span className="font-medium text-white">{course.duration}</span>
                     </li>
                     <li className="flex justify-between gap-3">
-                      <span className="text-slate-500">Жашы</span>
+                      <span className="text-slate-400">Жашы</span>
                       <span className="text-right font-medium text-white">{detail.forWho}</span>
                     </li>
                     <li className="flex justify-between gap-3">
-                      <span className="text-slate-500">Модульдер</span>
+                      <span className="text-slate-400">Модульдер</span>
                       <span className="font-medium text-white">{detail.program.length}</span>
                     </li>
                   </ul>
 
-                  <div className="border-t border-white/[0.08] pt-4">
-                    <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <div className="border-t border-white/10 pt-4">
+                    <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
                       <Target className="h-3.5 w-3.5" />
                       Негизги көндүмдөр
                     </p>
@@ -355,7 +355,7 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
           </div>
         </div>
 
-        <div className="border-t border-white/[0.06] bg-white/[0.01]">
+        <div className="border-t border-white/10 bg-white/[0.01]">
           <TrialLessonSection defaultCourseInterest={course.title} />
         </div>
       </main>

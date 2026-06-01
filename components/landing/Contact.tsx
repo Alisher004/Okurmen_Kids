@@ -104,7 +104,7 @@ export default function Contact() {
                 ))}
               </div>
             </div>
-            <div className="overflow-hidden rounded-lg border border-white/[0.08]">
+            <div className="overflow-hidden rounded-lg border border-white/10">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d805.5089872322158!2d74.58629130583195!3d42.87159226006853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sru!2skg!4v1775462673042!5m2!1sru!2skg"
                 width="100%"
@@ -118,7 +118,7 @@ export default function Contact() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-            <div className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-5 sm:p-8">
+            <div className="rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:p-8">
               <h3 className="mb-6 text-lg font-bold text-white">Жазылуу формасы</h3>
 
               {showSuccess && (

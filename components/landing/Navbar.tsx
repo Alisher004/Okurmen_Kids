@@ -57,7 +57,7 @@ export default function Navbar() {
                 {item.label}
               </button>
             ))}
-            <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary !py-2.5 !text-sm">
+            <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary-nav !py-2.5 !text-sm">
               <Phone className="h-4 w-4" />
               Байланыш
             </button>
@@ -89,7 +89,7 @@ export default function Navbar() {
                 {item.label}
               </button>
             ))}
-            <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary mt-2 w-full">
+            <button type="button" onClick={() => scrollToSection('contact')} className="btn-secondary-nav mt-2 w-full">
               <Phone className="h-4 w-4" />
               Байланыш
             </button>

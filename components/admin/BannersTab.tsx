@@ -83,7 +83,7 @@ export default function BannersTab() {
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 rounded-xl bg-sky-500 px-5 py-2.5 font-semibold text-white"
+          className="flex items-center gap-2 rounded-xl bg-brand-gold-500 px-5 py-2.5 font-semibold text-white"
         >
           <Plus className="h-5 w-5" /> Кошуу
         </button>
@@ -233,7 +233,7 @@ export default function BannersTab() {
                 />
                 Активдүү
               </label>
-              <button type="submit" className="w-full rounded-xl bg-sky-500 py-3 font-semibold text-white">
+              <button type="submit" className="w-full rounded-xl bg-brand-gold-500 py-3 font-semibold text-white">
                 Сактоо
               </button>
             </div>

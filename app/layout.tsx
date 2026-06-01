@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ky" className={jakarta.variable}>
-      <body className={`${jakarta.className} text-brand-navy-700`}>
+      <body className={`${jakarta.className} text-slate-200`}>
         <JsonLd />
         <Providers>{children}</Providers>
       </body>

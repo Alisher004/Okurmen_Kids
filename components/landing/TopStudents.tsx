@@ -51,7 +51,7 @@ export default function TopStudents() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-slate-800"
+                  className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-brand-navy-900"
                 >
                   <img
                     src={student.image}

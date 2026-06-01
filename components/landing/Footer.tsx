@@ -19,14 +19,14 @@ export default function Footer() {
         <div className="mb-10 grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <LogoMark variant="light" size="lg" showText={true} />
-            <p className="mt-4 max-w-xs leading-relaxed text-brand-navy-200">
+            <p className="mt-4 max-w-xs leading-relaxed text-slate-300">
               Балдар үчүн IT билим берүү борбору. Келечектин программисттерин тарбиялайбыз.
             </p>
           </div>
 
           <div>
             <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-brand-gold-400">Курстар</h3>
-            <ul className="space-y-2.5 text-brand-navy-200">
+            <ul className="space-y-2.5 text-slate-300">
               {courseTitles.map((c) => (
                 <li key={c}>
                   <a href="#courses" className="transition-colors hover:text-brand-gold-300">
@@ -39,7 +39,7 @@ export default function Footer() {
 
           <div>
             <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-brand-gold-400">Байланыш</h3>
-            <ul className="space-y-3 text-brand-navy-200">
+            <ul className="space-y-3 text-slate-300">
               <li>
                 <a href="tel:+996500677798" className="transition-colors hover:text-white">
                   +996 500 677 798
@@ -66,7 +66,7 @@ export default function Footer() {
                 href="https://2gis.kg/bishkek/firm/70000001078008057"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
                 aria-label="2GIS"
               >
                 <span className="text-xs font-bold">2GIS</span>
@@ -75,7 +75,7 @@ export default function Footer() {
                 href="https://www.instagram.com/okurmen_kids/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
                 aria-label="Instagram"
               >
                 <Instagram className="h-5 w-5" />
@@ -84,14 +84,14 @@ export default function Footer() {
                 href="https://www.youtube.com/@OKURMENKIDS"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
                 aria-label="YouTube"
               >
                 <Youtube className="h-5 w-5" />
               </a>
               <a
                 href="mailto:okurmen2022@gmail.com"
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/10 transition-all hover:border-brand-gold-400/50 hover:bg-brand-gold-500/20"
                 aria-label="Email"
               >
                 <Mail className="h-5 w-5" />
@@ -100,7 +100,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-brand-navy-800 pt-8 text-sm text-brand-navy-400 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-slate-400 sm:flex-row">
           <p>&copy; {new Date().getFullYear()} Okurmen Kids. Бардык укуктар корголгон.</p>
           <div className="flex gap-4">
             <Link href="/privacy" className="hover:text-brand-gold-300">

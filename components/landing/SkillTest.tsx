@@ -115,7 +115,7 @@ export default function SkillTest() {
             />
           ) : (
             <>
-              <div className="mb-6 h-1 overflow-hidden rounded-full bg-white/10">
+              <div className="mb-6 h-1 overflow-hidden rounded-full bg-white/5">
                 <motion.div
                   className="h-full rounded-full bg-brand-gold-500"
                   animate={{ width: `${step === 'intro' ? 0 : Math.min(progress, 100)}%` }}
@@ -129,7 +129,7 @@ export default function SkillTest() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-6 text-center sm:p-8"
+                    className="rounded-lg border border-white/10 bg-white/[0.03] p-6 text-center sm:p-8"
                   >
                     <p className="mb-6 text-slate-400">
                       {total} жөнөкөй суроо. Акырында пайыз жана балл көрсөтүлөт.
@@ -147,7 +147,7 @@ export default function SkillTest() {
                     initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0 }}
-                    className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-5 sm:p-8"
+                    className="rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:p-8"
                   >
                     <p className="mb-2 text-sm font-semibold text-brand-gold-600">
                       Суроо {currentIndex + 1} / {total}
@@ -159,7 +159,7 @@ export default function SkillTest() {
                           key={opt}
                           type="button"
                           onClick={() => handleAnswer(idx)}
-                          className="w-full rounded-lg border border-white/12 bg-white/[0.04] px-4 py-3.5 text-left font-medium text-slate-200 transition hover:border-brand-gold-400/40 hover:bg-white/[0.06]"
+                          className="w-full rounded-lg border border-white/12 bg-white/5 px-4 py-3.5 text-left font-medium text-slate-200 transition hover:border-brand-gold-400/40 hover:bg-white/[0.06]"
                         >
                           {opt}
                         </button>
@@ -174,7 +174,7 @@ export default function SkillTest() {
                     onSubmit={handleSubmit}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="space-y-4 rounded-lg border border-white/[0.08] bg-white/[0.03] p-5 sm:p-8"
+                    className="space-y-4 rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:p-8"
                   >
                     <p className="text-center text-lg font-bold text-white">
                       Жыйынтык: {score}/{total} ({percentage}%)

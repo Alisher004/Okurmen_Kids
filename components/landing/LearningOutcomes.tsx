@@ -38,7 +38,7 @@ export default function LearningOutcomes() {
           subtitle="Практика, логика жана көрүнүүчү долбоор — ар бир курсунун негизи"
         />
 
-        <motion.div className="grid gap-8 border-t border-white/[0.08] pt-10 sm:grid-cols-2 lg:gap-10">
+        <motion.div className="grid gap-8 border-t border-white/10 pt-10 sm:grid-cols-2 lg:gap-10">
           {outcomes.map((item, i) => (
             <motion.article
               key={item.title}

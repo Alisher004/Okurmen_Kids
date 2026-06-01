@@ -41,7 +41,7 @@ export default function ManagerPanel() {
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#171827] text-slate-300">
+      <div className="flex min-h-screen items-center justify-center bg-[#001A3D] text-slate-300">
         Жүктөлүүдө...
       </div>
     );
@@ -65,13 +65,13 @@ export default function ManagerPanel() {
 
   if (!isStaff) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#171827] px-4 text-center text-white">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[#001A3D] px-4 text-center text-white">
         <ShieldCheck className="mb-4 h-12 w-12 text-amber-400" />
         <h1 className="text-xl font-bold">Уруксат жок</h1>
         <p className="mt-2 max-w-md text-slate-400">
           Firestore&apos;до users/{authUser.uid} документин role: manager же admin кылып түзүңүз.
         </p>
-        <button type="button" onClick={() => auth && signOut(auth)} className="mt-6 text-sky-400">
+        <button type="button" onClick={() => auth && signOut(auth)} className="mt-6 text-brand-gold-400">
           Чыгуу
         </button>
       </div>
@@ -86,11 +86,11 @@ export default function ManagerPanel() {
   const activeTabConfig = tabs.find((tab) => tab.id === activeTab);
 
   return (
-    <div className="min-h-screen bg-[#171827] text-white">
+    <div className="min-h-screen bg-[#001A3D] text-white">
       <header className="border-b border-white/10 px-4 py-4 sm:px-8">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-wider text-sky-300">Manager</p>
+            <p className="text-xs uppercase tracking-wider text-brand-gold-300">Manager</p>
             <h1 className="text-2xl font-bold">Менеджер кабинети</h1>
             <p className="text-sm text-slate-400">{userRole === 'admin' ? 'Админ (толук көрүү)' : 'Менеджер'}</p>
           </div>
@@ -109,7 +109,7 @@ export default function ManagerPanel() {
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={`shrink-0 rounded-xl px-4 py-2 text-sm font-semibold ${
-                activeTab === tab.id ? 'bg-sky-500' : 'bg-white/10'
+                activeTab === tab.id ? 'bg-brand-gold-500' : 'bg-white/10'
               }`}
             >
               {tab.label} ({tab.count})
@@ -141,7 +141,7 @@ export default function ManagerPanel() {
                     setIsMobileNavOpen(false);
                   }}
                   className={`mb-1 w-full rounded-xl px-4 py-2 text-left text-sm font-semibold last:mb-0 ${
-                    activeTab === tab.id ? 'bg-sky-500' : 'bg-white/10'
+                    activeTab === tab.id ? 'bg-brand-gold-500' : 'bg-white/10'
                   }`}
                 >
                   {tab.label} ({tab.count})

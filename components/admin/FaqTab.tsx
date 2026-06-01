@@ -29,7 +29,7 @@ export default function FaqTab() {
     <div>
       <div className="mb-6 flex justify-between">
         <h2 className="text-2xl font-bold">FAQ ({faqItems.length})</h2>
-        <button type="button" onClick={() => setShowModal(true)} className="rounded-xl bg-sky-500 px-5 py-2.5 font-semibold text-white"><Plus className="inline h-5 w-5" /> Кошуу</button>
+        <button type="button" onClick={() => setShowModal(true)} className="rounded-xl bg-brand-gold-500 px-5 py-2.5 font-semibold text-white"><Plus className="inline h-5 w-5" /> Кошуу</button>
       </div>
       <div className="space-y-3">
         {sorted.map((f) => (
@@ -55,7 +55,7 @@ export default function FaqTab() {
             <textarea className="mb-3 w-full rounded-xl border px-4 py-2" rows={4} placeholder="Жооп" value={form.answer} onChange={(e) => setForm({ ...form, answer: e.target.value })} required />
             <OrderControls order={form.order} onOrderChange={(order) => setForm({ ...form, order })} />
             <label className="mb-4 flex gap-2"><input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} /> Активдүү</label>
-            <button type="submit" className="w-full rounded-xl bg-sky-500 py-3 text-white font-semibold">Сактоо</button>
+            <button type="submit" className="w-full rounded-xl bg-brand-gold-500 py-3 text-white font-semibold">Сактоо</button>
           </form>
         </div>
       )}
