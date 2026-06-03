@@ -131,7 +131,10 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
               className="object-cover"
               priority
               sizes="(max-width: 1024px) 100vw, 58vw"
-              unoptimized={!imageUrl.includes('images.unsplash.com')}
+              unoptimized={
+                !imageUrl.includes('images.unsplash.com') &&
+                !imageUrl.includes('res.cloudinary.com')
+              }
             />
             <div className="course-hero-glow" aria-hidden />
             <div
@@ -202,7 +205,10 @@ export default function CourseDetailPage({ slug }: CourseDetailPageProps) {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 480px"
                   priority
-                  unoptimized={!imageUrl.includes('images.unsplash.com')}
+                  unoptimized={
+                !imageUrl.includes('images.unsplash.com') &&
+                !imageUrl.includes('res.cloudinary.com')
+              }
                 />
                 <div className="absolute inset-0 ring-1 ring-inset ring-white/10" aria-hidden />
               </motion.div>

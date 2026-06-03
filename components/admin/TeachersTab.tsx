@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { Plus, Trash2, Edit2, X, User, GraduationCap, Briefcase, FileText } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import type { Teacher } from '@/context/DataContext';
-import ImageUrlField from './ImageUrlField';
+import ImageUploadField, { FormUploadSpinner } from './ImageUploadField';
 import OrderControls from '@/components/ui/OrderControls';
 import { getFirestoreErrorMessage } from '@/lib/firestoreAdmin';
+import { resolveRequiredImageUrl } from '@/lib/cloudinary';
 
 export default function TeachersTab() {
   const { teachers, addTeacher, updateTeacher, deleteTeacher } = useData();
@@ -22,19 +23,26 @@ export default function TeachersTab() {
     order: 0,
   });
   const [saveError, setSaveError] = useState('');
+  const [pendingImage, setPendingImage] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaveError('');
+    setSaving(true);
     try {
+      const image = await resolveRequiredImageUrl(formData.image, pendingImage, 'Сүрөт');
+      const payload = { ...formData, image };
       if (editingTeacher) {
-        await updateTeacher(editingTeacher.id, formData);
+        await updateTeacher(editingTeacher.id, payload);
       } else {
-        await addTeacher(formData);
+        await addTeacher(payload);
       }
       resetForm();
     } catch (err) {
       setSaveError(getFirestoreErrorMessage(err));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -49,6 +57,7 @@ export default function TeachersTab() {
       order: 0,
     });
     setSaveError('');
+    setPendingImage(null);
     setEditingTeacher(null);
     setShowModal(false);
   };
@@ -64,6 +73,8 @@ export default function TeachersTab() {
       image: teacher.image,
       order: teacher.order ?? 0,
     });
+    setPendingImage(null);
+    setSaveError('');
     setShowModal(true);
   };
 
@@ -222,11 +233,12 @@ export default function TeachersTab() {
                 />
               </div>
 
-              <ImageUrlField
+              <ImageUploadField
                 value={formData.image}
                 onChange={(image) => setFormData({ ...formData, image })}
-                placeholder="https://example.com/teacher.jpg"
+                onPendingFileChange={setPendingImage}
                 required
+                disabled={saving}
               />
 
               <OrderControls
@@ -240,12 +252,16 @@ export default function TeachersTab() {
                 </div>
               )}
 
-              <button
-                type="submit"
-                className="w-full shrink-0 rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-4 font-semibold text-white transition-shadow hover:shadow-lg"
-              >
-                {editingTeacher ? 'Сактоо' : 'Кошуу'}
-              </button>
+              {saving ? (
+                <FormUploadSpinner label="Сүрөт жүктөлүп, сакталууда..." />
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full shrink-0 rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-4 font-semibold text-white transition-shadow hover:shadow-lg"
+                >
+                  {editingTeacher ? 'Сактоо' : 'Кошуу'}
+                </button>
+              )}
             </form>
           </div>
         </div>

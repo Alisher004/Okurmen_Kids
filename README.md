@@ -23,6 +23,19 @@ npm run dev
    - `role: "manager"` — менеджер кабинети гана
 4. Legacy: `admins/{uid}` — админ уруксаты (артка шайкештик)
 
+## Cloudinary (сүрөт жүктөө)
+
+Админ панелде сүрөт **файл** менен жүктөлөт → Cloudinary → `secure_url` Firestore'го сакталат.
+
+```env
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
+```
+
+Cloudinary Dashboard: **Upload** → **Add upload preset** → **Signing Mode: Unsigned**.
+
+Firebase = маалыматтар, Cloudinary = сүрөттөр. Эски URL'дар иштей берет.
+
 ## Firestore коллекциялары
 
 | Коллекция | Максат |

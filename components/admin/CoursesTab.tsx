@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Plus, Trash2, Edit2, X } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import type { Course } from '@/context/DataContext';
-import ImageUrlField from './ImageUrlField';
+import ImageUploadField, { FormUploadSpinner } from './ImageUploadField';
+import { resolveOptionalImageUrl } from '@/lib/cloudinary';
 
 export default function CoursesTab() {
   const { courses, addCourse, updateCourse, deleteCourse } = useData();
@@ -21,14 +22,28 @@ export default function CoursesTab() {
     slug: '',
   });
 
+  const [pendingImage, setPendingImage] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingCourse) {
-      await updateCourse(editingCourse.id, formData);
-    } else {
-      await addCourse(formData);
+    setSaveError('');
+    setSaving(true);
+    try {
+      const image = (await resolveOptionalImageUrl(formData.image, pendingImage)) ?? '';
+      const payload = { ...formData, image };
+      if (editingCourse) {
+        await updateCourse(editingCourse.id, payload);
+      } else {
+        await addCourse(payload);
+      }
+      resetForm();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Сактоо ийгиликсиз болду');
+    } finally {
+      setSaving(false);
     }
-    resetForm();
   };
 
   const resetForm = () => {
@@ -42,6 +57,8 @@ export default function CoursesTab() {
       image: '',
       slug: '',
     });
+    setPendingImage(null);
+    setSaveError('');
     setEditingCourse(null);
     setShowModal(false);
   };
@@ -58,6 +75,8 @@ export default function CoursesTab() {
       image: course.image || '',
       slug: course.slug || '',
     });
+    setPendingImage(null);
+    setSaveError('');
     setShowModal(true);
   };
 
@@ -119,10 +138,12 @@ export default function CoursesTab() {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <ImageUrlField
+              <ImageUploadField
                 value={formData.image}
                 onChange={(image) => setFormData({ ...formData, image })}
-                placeholder="https://example.com/course.jpg"
+                onPendingFileChange={setPendingImage}
+                optional
+                disabled={saving}
               />
               <input
                 type="text"
@@ -170,12 +191,19 @@ export default function CoursesTab() {
                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                 className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 outline-none focus:border-blue-500"
               />
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-3 font-semibold text-white transition-shadow hover:shadow-lg"
-              >
-                {editingCourse ? 'Сактоо' : 'Кошуу'}
-              </button>
+              {saveError && (
+                <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{saveError}</p>
+              )}
+              {saving ? (
+                <FormUploadSpinner />
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-3 font-semibold text-white transition-shadow hover:shadow-lg"
+                >
+                  {editingCourse ? 'Сактоо' : 'Кошуу'}
+                </button>
+              )}
             </form>
           </div>
         </div>

@@ -83,7 +83,9 @@ function SlideBackground({
 }) {
   const overlayStrength = 0.35 + (slide.overlayOpacity / 100) * 0.45;
   const useUnoptimized = (url: string) =>
-    !url.includes('images.unsplash.com') && !url.includes('firebasestorage.googleapis.com');
+    !url.includes('images.unsplash.com') &&
+    !url.includes('firebasestorage.googleapis.com') &&
+    !url.includes('res.cloudinary.com');
 
   return (
     <div className="absolute inset-0">
@@ -121,7 +123,7 @@ function SlideBackground({
   );
 }
 
-function HeroSlideContent({ slide }: { slide: NormalizedBanner }) {
+function HeroSlideContent({ slide, reserveNavSpace }: { slide: NormalizedBanner; reserveNavSpace?: boolean }) {
   const centered = slide.textAlign === 'center';
 
   return (
@@ -136,7 +138,7 @@ function HeroSlideContent({ slide }: { slide: NormalizedBanner }) {
         <div
           className={`max-w-xl sm:max-w-2xl lg:max-w-[34rem] ${
             centered ? 'mx-auto text-center' : 'text-left'
-          }`}
+          } ${reserveNavSpace ? 'lg:px-14' : ''}`}
         >
           <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-gold-400 sm:text-xs">
             Okurmen Kids · IT Academy
@@ -185,7 +187,7 @@ function HeroSlideContent({ slide }: { slide: NormalizedBanner }) {
 }
 
 const arrowClass =
-  'pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md transition hover:bg-black/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold-400 sm:h-12 sm:w-12';
+  'pointer-events-auto hidden h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-md transition hover:bg-black/45 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold-400 lg:flex lg:h-12 lg:w-12';
 
 export default function HeroCarousel() {
   const { banners, publicDataLoaded } = useData();
@@ -290,7 +292,7 @@ export default function HeroCarousel() {
           className="absolute inset-0 flex flex-col"
         >
           <SlideBackground slide={slide} priority={index === 0} />
-          <HeroSlideContent slide={slide} />
+          <HeroSlideContent slide={slide} reserveNavSpace={multi} />
         </motion.div>
       </AnimatePresence>
 

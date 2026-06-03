@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { Plus, Trash2, Edit2, X } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import type { Banner } from '@/lib/types';
-import ImageUrlField from './ImageUrlField';
+import ImageUploadField, { FormUploadSpinner } from './ImageUploadField';
 import OrderControls from '@/components/ui/OrderControls';
+import { resolveOptionalImageUrl, resolveRequiredImageUrl } from '@/lib/cloudinary';
 
 const empty: Omit<Banner, 'id'> = {
   title: '',
@@ -46,33 +47,58 @@ export default function BannersTab() {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Banner | null>(null);
   const [form, setForm] = useState(empty);
+  const [pendingDesktop, setPendingDesktop] = useState<File | null>(null);
+  const [pendingMobile, setPendingMobile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const sorted = [...banners].sort((a, b) => a.order - b.order);
 
+  const clearPending = () => {
+    setPendingDesktop(null);
+    setPendingMobile(null);
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: Omit<Banner, 'id'> = {
-      ...form,
-      imageMobile: form.imageMobile?.trim() || undefined,
-      valueProposition: form.valueProposition?.trim() || undefined,
-      overlayOpacity: form.overlayOpacity,
-      secondaryCtaText: form.secondaryCtaText?.trim() || '',
-      secondaryCtaLink: form.secondaryCtaLink?.trim() || '',
-    };
-    if (editing) await updateBanner(editing.id, payload);
-    else await addBanner(payload);
-    reset();
+    setSaveError('');
+    setSaving(true);
+    try {
+      const image = await resolveRequiredImageUrl(form.image, pendingDesktop, 'Desktop сүрөт');
+      const imageMobile = await resolveOptionalImageUrl(form.imageMobile, pendingMobile);
+
+      const payload: Omit<Banner, 'id'> = {
+        ...form,
+        image,
+        imageMobile: imageMobile || undefined,
+        valueProposition: form.valueProposition?.trim() || undefined,
+        overlayOpacity: form.overlayOpacity,
+        secondaryCtaText: form.secondaryCtaText?.trim() || '',
+        secondaryCtaLink: form.secondaryCtaLink?.trim() || '',
+      };
+      if (editing) await updateBanner(editing.id, payload);
+      else await addBanner(payload);
+      reset();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Сактоо ийгиликсиз болду');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const reset = () => {
     setForm(empty);
     setEditing(null);
     setShowModal(false);
+    clearPending();
+    setSaveError('');
   };
 
   const edit = (b: Banner) => {
     setEditing(b);
     setForm(bannerToForm(b));
+    clearPending();
+    setSaveError('');
     setShowModal(true);
   };
 
@@ -82,7 +108,11 @@ export default function BannersTab() {
         <h2 className="text-2xl font-bold">Баннерлер ({banners.length})</h2>
         <button
           type="button"
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            clearPending();
+            setSaveError('');
+            setShowModal(true);
+          }}
           className="flex items-center gap-2 rounded-xl bg-brand-gold-500 px-5 py-2.5 font-semibold text-white"
         >
           <Plus className="h-5 w-5" /> Кошуу
@@ -137,15 +167,21 @@ export default function BannersTab() {
               </button>
             </div>
             <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
-              <ImageUrlField
-                label="Desktop сүрөт (image)"
+              <ImageUploadField
+                label="Desktop сүрөт"
                 value={form.image}
                 onChange={(image) => setForm({ ...form, image })}
+                onPendingFileChange={setPendingDesktop}
+                required
+                disabled={saving}
               />
-              <ImageUrlField
-                label="Mobile сүрөт (optional)"
+              <ImageUploadField
+                label="Mobile сүрөт"
                 value={form.imageMobile ?? ''}
                 onChange={(imageMobile) => setForm({ ...form, imageMobile })}
+                onPendingFileChange={setPendingMobile}
+                optional
+                disabled={saving}
               />
               <input
                 className="w-full rounded-xl border px-4 py-2"
@@ -153,12 +189,14 @@ export default function BannersTab() {
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 required
+                disabled={saving}
               />
               <input
                 className="w-full rounded-xl border px-4 py-2"
                 placeholder="Subheadline (subtitle)"
                 value={form.subtitle}
                 onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+                disabled={saving}
               />
               <textarea
                 className="w-full rounded-xl border px-4 py-2"
@@ -166,6 +204,7 @@ export default function BannersTab() {
                 rows={2}
                 value={form.valueProposition ?? ''}
                 onChange={(e) => setForm({ ...form, valueProposition: e.target.value })}
+                disabled={saving}
               />
               <div className="grid grid-cols-2 gap-3">
                 <input
@@ -173,12 +212,14 @@ export default function BannersTab() {
                   placeholder="Primary CTA текст"
                   value={form.ctaText}
                   onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
+                  disabled={saving}
                 />
                 <input
                   className="w-full rounded-xl border px-4 py-2"
                   placeholder="Primary CTA шилтеме"
                   value={form.ctaLink}
                   onChange={(e) => setForm({ ...form, ctaLink: e.target.value })}
+                  disabled={saving}
                 />
               </div>
               <p className="text-xs text-gray-500">
@@ -190,12 +231,14 @@ export default function BannersTab() {
                   placeholder="Secondary CTA (архив)"
                   value={form.secondaryCtaText ?? ''}
                   onChange={(e) => setForm({ ...form, secondaryCtaText: e.target.value })}
+                  disabled={saving}
                 />
                 <input
                   className="w-full rounded-xl border px-4 py-2"
                   placeholder="Secondary шилтеме"
                   value={form.secondaryCtaLink ?? ''}
                   onChange={(e) => setForm({ ...form, secondaryCtaLink: e.target.value })}
+                  disabled={saving}
                 />
               </div>
               <div>
@@ -206,6 +249,7 @@ export default function BannersTab() {
                   onChange={(e) =>
                     setForm({ ...form, textAlign: e.target.value as 'left' | 'center' })
                   }
+                  disabled={saving}
                 >
                   <option value="left">Сол</option>
                   <option value="center">Борбор</option>
@@ -222,6 +266,7 @@ export default function BannersTab() {
                   value={form.overlayOpacity ?? 25}
                   onChange={(e) => setForm({ ...form, overlayOpacity: Number(e.target.value) })}
                   className="w-full"
+                  disabled={saving}
                 />
               </div>
               <OrderControls order={form.order} onOrderChange={(order) => setForm({ ...form, order })} />
@@ -230,12 +275,22 @@ export default function BannersTab() {
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+                  disabled={saving}
                 />
                 Активдүү
               </label>
-              <button type="submit" className="w-full rounded-xl bg-brand-gold-500 py-3 font-semibold text-white">
-                Сактоо
-              </button>
+              {saveError && (
+                <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+                  {saveError}
+                </p>
+              )}
+              {saving ? (
+                <FormUploadSpinner label="Сүрөт жүктөлүп, сакталууда..." />
+              ) : (
+                <button type="submit" className="w-full rounded-xl bg-brand-gold-500 py-3 font-semibold text-white">
+                  Сактоо
+                </button>
+              )}
             </div>
           </form>
         </div>

@@ -4,26 +4,42 @@ import { useState } from 'react';
 import { Plus, Trash2, Edit2, X } from 'lucide-react';
 import { useData } from '@/context/DataContext';
 import type { Student } from '@/context/DataContext';
-import ImageUrlField from './ImageUrlField';
+import ImageUploadField, { FormUploadSpinner } from './ImageUploadField';
+import { resolveRequiredImageUrl } from '@/lib/cloudinary';
 
 export default function StudentsTab() {
   const { students, addStudent, updateStudent, deleteStudent } = useData();
   const [showModal, setShowModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [formData, setFormData] = useState({ name: '', course: '', image: '' });
+  const [pendingImage, setPendingImage] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingStudent) {
-      await updateStudent(editingStudent.id, formData);
-    } else {
-      await addStudent(formData);
+    setSaveError('');
+    setSaving(true);
+    try {
+      const image = await resolveRequiredImageUrl(formData.image, pendingImage, 'Сүрөт');
+      const payload = { ...formData, image };
+      if (editingStudent) {
+        await updateStudent(editingStudent.id, payload);
+      } else {
+        await addStudent(payload);
+      }
+      resetForm();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Сактоо ийгиликсиз болду');
+    } finally {
+      setSaving(false);
     }
-    resetForm();
   };
 
   const resetForm = () => {
     setFormData({ name: '', course: '', image: '' });
+    setPendingImage(null);
+    setSaveError('');
     setEditingStudent(null);
     setShowModal(false);
   };
@@ -31,6 +47,8 @@ export default function StudentsTab() {
   const handleEdit = (student: Student) => {
     setEditingStudent(student);
     setFormData({ name: student.name, course: student.course, image: student.image || '' });
+    setPendingImage(null);
+    setSaveError('');
     setShowModal(true);
   };
 
@@ -38,7 +56,14 @@ export default function StudentsTab() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Мыкты студенттер ({students.length})</h2>
-        <button onClick={() => setShowModal(true)} className="bg-gradient-to-r from-blue-500 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg transition-shadow">
+        <button
+          onClick={() => {
+            setPendingImage(null);
+            setSaveError('');
+            setShowModal(true);
+          }}
+          className="bg-gradient-to-r from-blue-500 to-yellow-500 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 hover:shadow-lg transition-shadow"
+        >
           <Plus className="w-5 h-5" />
           <span>Кошуу</span>
         </button>
@@ -82,20 +107,28 @@ export default function StudentsTab() {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="text" placeholder="Аты-жөнү" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none" required />
-              <input type="text" placeholder="Группа / курс" value={formData.course} onChange={(e) => setFormData({...formData, course: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none" required />
-              <ImageUrlField
+              <input type="text" placeholder="Аты-жөнү" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none" required disabled={saving} />
+              <input type="text" placeholder="Группа / курс" value={formData.course} onChange={(e) => setFormData({...formData, course: e.target.value})} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 outline-none" required disabled={saving} />
+              <ImageUploadField
                 value={formData.image}
                 onChange={(image) => setFormData({ ...formData, image })}
-                placeholder="https://example.com/student.jpg"
+                onPendingFileChange={setPendingImage}
                 required
+                disabled={saving}
               />
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-3 font-semibold text-white transition-shadow hover:shadow-lg"
-              >
-                {editingStudent ? 'Сактоо' : 'Кошуу'}
-              </button>
+              {saveError && (
+                <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{saveError}</p>
+              )}
+              {saving ? (
+                <FormUploadSpinner />
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-yellow-500 py-3 font-semibold text-white transition-shadow hover:shadow-lg"
+                >
+                  {editingStudent ? 'Сактоо' : 'Кошуу'}
+                </button>
+              )}
             </form>
           </div>
         </div>

@@ -62,7 +62,10 @@ export default function Courses() {
                         fill
                         sizes="(max-width: 1024px) 100vw, 50vw"
                         loading="lazy"
-                        unoptimized={!imageUrl.includes('images.unsplash.com')}
+                        unoptimized={
+                          !imageUrl.includes('images.unsplash.com') &&
+                          !imageUrl.includes('res.cloudinary.com')
+                        }
                         className="object-cover"
                       />
                       <div className="absolute bottom-3 left-3">
